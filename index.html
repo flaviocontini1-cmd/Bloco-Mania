@@ -656,6 +656,149 @@
     .theme-preview span:nth-child(3) { right: 30%; top: 15%; animation-delay: -2.4s; }
     .theme-preview span:nth-child(4) { right: 8%; top: 48%; animation-delay: -3.4s; }
     .theme-preview::after { z-index: 2; border-radius: 13px; box-shadow: inset 0 0 28px rgba(69,54,95,.15); }
+    .profile-copy { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+    .player-name-input {
+      width: 116px;
+      height: 28px;
+      padding: 2px 8px;
+      border: 2px solid #ded2f0;
+      border-radius: 9px;
+      background: #faf7ff;
+      color: var(--ink);
+      font: 900 11px "Trebuchet MS", sans-serif;
+      text-align: right;
+      text-transform: uppercase;
+      outline: 0;
+    }
+    .player-name-input:hover { border-color: #bda6e6; }
+    .player-name-input:focus { border-color: #65d2df; background: #effdff; box-shadow: 0 0 0 4px rgba(53,201,220,.14); }
+    .drag-ghost {
+      width: auto;
+      height: auto;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      filter: none;
+    }
+    .drag-ghost .mini-grid { filter: none; }
+    .menu-button { font-size: 21px; font-weight: 900; }
+    .settings-backdrop { position: fixed; inset: 0; z-index: 150; visibility: hidden; opacity: 0; background: rgba(55,39,83,.38); backdrop-filter: blur(4px); transition: opacity .25s ease, visibility .25s ease; }
+    .settings-backdrop.show { visibility: visible; opacity: 1; }
+    .settings-menu { position: fixed; top: 0; right: 0; z-index: 151; width: min(370px, 100%); height: 100vh; overflow-y: auto; transform: translateX(105%); border-left: 3px solid #e1d5f1; background: #fbf9ff; color: var(--ink); box-shadow: -18px 0 55px rgba(70,48,110,.20); transition: transform .28s cubic-bezier(.2,.8,.2,1); }
+    .settings-menu.open { transform: translateX(0); }
+    .settings-head { min-height: 92px; display: flex; align-items: center; justify-content: space-between; padding: 20px 22px; border-bottom: 2px solid #e8e0f2; background: rgba(255,255,255,.9); }
+    .settings-head small, .settings-group > small { color: #9165ce; font: 900 9px "Trebuchet MS", sans-serif; letter-spacing: .6px; }
+    .settings-head h2 { margin: 4px 0 0; font-size: 23px; }
+    .settings-head button { width: 40px; height: 40px; border: 2px solid #dfd4ee; border-radius: 13px; background: #fff; color: #7355a4; font-size: 22px; cursor: pointer; box-shadow: 0 4px 0 #e7dff1; }
+    .settings-body { display: grid; gap: 15px; padding: 20px; }
+    .settings-group { padding: 18px; border: 2px solid #e3d9ef; border-radius: 20px; background: #fff; box-shadow: 0 5px 0 #ebe4f3; }
+    .theme-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 12px; }
+    .theme-choice button { height: 44px; border: 2px solid #ddd1ee; border-radius: 13px; background: #f9f5ff; color: #6e578e; font-weight: 900; cursor: pointer; }
+    .theme-choice button.active { border-color: #8a68ce; background: #eee5ff; color: #6944b4; box-shadow: inset 0 -4px 0 rgba(105,68,180,.10); }
+    .setting-row { min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 10px; padding: 10px 0; border-bottom: 1px solid #eee8f4; }
+    .setting-row:last-child { border-bottom: 0; padding-bottom: 0; }
+    .setting-row span { display: flex; flex-direction: column; gap: 3px; }
+    .setting-row b { font-size: 12px; }
+    .setting-row i { color: #8b8099; font-size: 10px; font-style: normal; }
+    .setting-row input { width: 22px; height: 22px; accent-color: #825dcc; cursor: pointer; }
+    .volume-row { display: grid; gap: 8px; padding: 12px 0 5px; color: #776b89; font-size: 10px; font-weight: 900; }
+    .volume-row input { width: 100%; accent-color: #35c9dc; cursor: pointer; }
+    .credits-card { text-align: center; background: linear-gradient(145deg, #fff8d6, #fff); }
+    .credits-icon { width: 58px; height: 58px; display: grid; place-items: center; margin: 12px auto 7px; border-radius: 18px; background: #f1e8ff; font-size: 29px; box-shadow: inset 0 -5px 0 rgba(106,74,169,.10); }
+    .credits-card h3 { margin: 0; color: #6848a5; font-size: 19px; }
+    .credits-card p { margin: 5px 0 0; color: #81758f; font-size: 11px; }
+    .credits-card strong { color: #d65891; }
+
+    body[data-ui-theme="dark"] {
+      --panel: #251d35;
+      --panel-2: #302442;
+      --line: #4b3d61;
+      --muted: #b4a8c6;
+      --text: #fbf7ff;
+      --ink: #f6f0ff;
+      background:
+        radial-gradient(circle at 8% 12%, rgba(255,216,90,.10) 0 72px, transparent 73px),
+        radial-gradient(circle at 92% 18%, rgba(255,114,173,.10) 0 105px, transparent 106px),
+        linear-gradient(145deg, #171220, #21172d 50%, #151b2b);
+      color: var(--ink);
+    }
+    body[data-ui-theme="dark"] .topbar,
+    body[data-ui-theme="dark"] .arena-head,
+    body[data-ui-theme="dark"] .mission,
+    body[data-ui-theme="dark"] .streak,
+    body[data-ui-theme="dark"] .season,
+    body[data-ui-theme="dark"] .piece,
+    body[data-ui-theme="dark"] .statusbar,
+    body[data-ui-theme="dark"] .leaderboard,
+    body[data-ui-theme="dark"] .leaderboard li,
+    body[data-ui-theme="dark"] .your-rank,
+    body[data-ui-theme="dark"] .settings-menu,
+    body[data-ui-theme="dark"] .settings-group,
+    body[data-ui-theme="dark"] dialog,
+    body[data-ui-theme="dark"] .modal-head,
+    body[data-ui-theme="dark"] .challenge-card,
+    body[data-ui-theme="dark"] .achievement-card,
+    body[data-ui-theme="dark"] .theme-card,
+    body[data-ui-theme="dark"] .full-ranking li,
+    body[data-ui-theme="dark"] .ranking-summary { border-color: #4b3d61; background: rgba(37,29,53,.95); color: var(--ink); box-shadow: 0 7px 0 rgba(9,6,14,.32), 0 15px 30px rgba(0,0,0,.18); }
+    body[data-ui-theme="dark"] .settings-head { border-color: #4b3d61; background: #21182f; }
+    body[data-ui-theme="dark"] .settings-head button,
+    body[data-ui-theme="dark"] .sound,
+    body[data-ui-theme="dark"] .restart,
+    body[data-ui-theme="dark"] .icon-button { border-color: #57476f; background: #302442; color: #e5d8fb; box-shadow: 0 4px 0 #171020; }
+    body[data-ui-theme="dark"] .nav button { color: #b8acc8; }
+    body[data-ui-theme="dark"] .nav button.active { border-color: #604b80; background: #3b2c53; color: #d9c4ff; }
+    body[data-ui-theme="dark"] .player-name-input,
+    body[data-ui-theme="dark"] .mode-select,
+    body[data-ui-theme="dark"] .theme-choice button { border-color: #55456c; background: #302442; color: #efe7fa; }
+    body[data-ui-theme="dark"] .theme-choice button.active { border-color: #a986ee; background: #4a356a; color: #fff; }
+    body[data-ui-theme="dark"] .combo { border-color: #315d67; background: #1d353b; color: #d4f6f8; }
+    body[data-ui-theme="dark"] .game-over { border-color: #5b4876; background: rgba(31,23,45,.96); }
+    body[data-ui-theme="dark"] .settings-group { box-shadow: 0 5px 0 #15101e; }
+    body[data-ui-theme="dark"] .credits-card { background: linear-gradient(145deg, #392f27, #251d35); }
+    body[data-ui-theme="dark"] .setting-row { border-color: #463950; }
+    body[data-ui-theme="dark"] .setting-row i,
+    body[data-ui-theme="dark"] .volume-row,
+    body[data-ui-theme="dark"] .credits-card p { color: #b6aac4; }
+    body[data-ui-theme="dark"] .map-strip,
+    body[data-ui-theme="dark"] .hint,
+    body[data-ui-theme="dark"] .arena-head small,
+    body[data-ui-theme="dark"] .score small { color: #b9aec8; }
+    body[data-ui-theme="dark"] .league,
+    body[data-ui-theme="dark"] .wide-button,
+    body[data-ui-theme="dark"] .achievement-tease,
+    body[data-ui-theme="dark"] .shop-intro,
+    body[data-ui-theme="dark"] .full-ranking,
+    body[data-ui-theme="dark"] .ranking-summary div,
+    body[data-ui-theme="dark"] .theme-card footer { border-color: #4b3d61; background: #251d35; color: #f6f0ff; }
+    body[data-ui-theme="dark"] .streak { border-color: #674735; background: #33251f; }
+    body[data-ui-theme="dark"] .streak small { color: #c5a28d; }
+    body[data-ui-theme="dark"] .season { border-color: #59447a; background: linear-gradient(145deg, #312342, #251d35); }
+    body[data-ui-theme="dark"] .track { background: #463950; }
+    body[data-ui-theme="dark"] .reward,
+    body[data-ui-theme="dark"] .achievement-tease { border-color: #4b3d61; }
+    body[data-ui-theme="dark"] .piece.selected { border-color: #45c8d8; background: #203c43; color: #f3feff; box-shadow: 0 7px 0 #173038, 0 0 0 5px rgba(53,201,220,.12); }
+    body[data-ui-theme="dark"] .piece.used { background: #201a2c; color: #7f738e; }
+    body[data-ui-theme="dark"] .coin-pill { border-color: #78662c; background: #3b321c; color: #ffe07c; box-shadow: 0 4px 0 #201b0f; }
+    body[data-ui-theme="dark"] .mission-icon { background: #413618; color: #ffdb63; }
+    body[data-ui-theme="dark"] .challenge-card > b,
+    body[data-ui-theme="dark"] .achievement-card > b,
+    body[data-ui-theme="dark"] .credits-icon { background: #3a2b50; color: #d7bdff; }
+    body[data-ui-theme="dark"] .theme-card button { border-color: #5a4774; background: #302442; color: #eee4ff; }
+    body[data-ui-theme="dark"] .theme-card button.buy { border-color: #78662c; background: #3b321c; color: #ffe07c; }
+    body[data-ui-theme="dark"] .game-over small { color: #b9acc9; }
+    body[data-ui-theme="dark"] .game-over h2 { color: #c5a6ff; }
+    body[data-ui-theme="dark"] .game-over strong { color: #ff8bbb; }
+    body[data-ui-theme="dark"] .modal-body { background: #1c1628; }
+    body[data-ui-theme="dark"] .profile-copy small,
+    body[data-ui-theme="dark"] .mission > small,
+    body[data-ui-theme="dark"] .eyebrow { color: #c7a9f3; }
+    body[data-ui-theme="dark"] .progress-label,
+    body[data-ui-theme="dark"] .reward,
+    body[data-ui-theme="dark"] .theme-card p,
+    body[data-ui-theme="dark"] .challenge-card p,
+    body[data-ui-theme="dark"] .achievement-card p { color: #b6aac4; }
 
     @keyframes scenery-colors {
       from { background-position: 0% 20%; }
@@ -694,6 +837,64 @@
     @media (max-width: 520px) {
       .theme-motion { inset: 9px; border-radius: 16px; }
       .theme-motion span { font-size: calc(var(--size) * .78); }
+      .profile-copy { display: flex; }
+      .profile-copy small, .profile .avatar, .profile .coin-pill { display: none; }
+      .player-name-input { width: 96px; }
+      .menu-button { display: block; }
+    }
+    @media (max-width: 1080px) {
+      .layout { grid-template-columns: minmax(0, 690px); gap: 26px; }
+      .arena { order: 1; }
+      .left { width: min(100%, 690px); display: grid; grid-template-columns: 1.45fr 1fr 1fr; gap: 14px; order: 2; margin: 0 auto; padding: 0; }
+      .left .rail-title { grid-column: 1 / -1; margin: 0; }
+      .left .mission, .left .streak, .left .season { height: 100%; margin: 0; }
+      .left .season { min-height: 0; }
+    }
+    @media (max-width: 800px) {
+      .layout { gap: 22px; }
+      .arena-head { display: grid; grid-template-columns: 1fr; gap: 14px; align-items: stretch; }
+      .mode-controls { display: grid; grid-template-columns: 1fr 1fr; }
+      .mode-select { width: 100%; min-width: 0; }
+      .scores { width: 100%; display: grid; grid-template-columns: 1fr 1fr auto; gap: 9px; text-align: left; }
+      .score { min-height: 54px; display: flex; flex-direction: column; justify-content: center; padding: 8px 11px; border: 2px solid #e5dbf1; border-radius: 14px; background: #faf7ff; }
+      body[data-ui-theme="dark"] .score { border-color: #4b3d61; background: #302442; }
+      .restart { align-self: center; }
+      .combo { height: auto; min-height: 46px; flex-wrap: wrap; padding: 9px 13px; }
+      .combo i { width: 100%; margin: 0; line-height: 1.35; }
+      .left { grid-template-columns: 1fr 1fr; }
+      .left .mission { grid-column: 1 / -1; }
+      .statusbar { height: auto; min-height: 58px; flex-wrap: wrap; justify-content: center; gap: 7px 18px; padding: 10px 16px; text-align: center; }
+      .statusbar .center, .statusbar span:last-child { display: inline; }
+    }
+    @media (max-width: 520px) {
+      .topbar { grid-template-columns: 1fr; gap: 10px; }
+      .brand { justify-self: center; }
+      .profile { width: 100%; display: grid; grid-template-columns: auto auto 1fr auto; gap: 8px; justify-self: stretch; order: 2; }
+      .profile .online { display: none; }
+      .profile .coin-pill { display: flex; min-width: 68px; }
+      .profile .avatar { width: 38px; height: 38px; display: grid; }
+      .profile-copy { width: 100%; align-items: stretch; }
+      .profile-copy small { display: block; text-align: left; }
+      .player-name-input { width: 100%; text-align: left; }
+      .nav { order: 3; justify-content: space-between; gap: 6px; }
+      .nav button { flex: 0 0 auto; padding: 0 10px; }
+      .layout { padding-inline: 8px; }
+      .arena-head { padding: 12px; }
+      .mode-controls { grid-template-columns: 1fr; }
+      .scores { grid-template-columns: 1fr 1fr 42px; }
+      .scores .best { display: flex; }
+      .score { min-width: 0; padding-inline: 8px; }
+      .score b, .score.live b { overflow: hidden; font-size: 16px; text-overflow: ellipsis; }
+      .left { grid-template-columns: 1fr; gap: 12px; }
+      .left .mission, .left .streak, .left .season { grid-column: 1; }
+      .mission { padding: 18px; }
+      .tray { gap: 6px; }
+      .piece { min-height: 70px; }
+      .piece small { display: block; }
+      .hint { padding: 0 10px; line-height: 1.5; }
+      .statusbar { display: grid; width: calc(100% - 14px); gap: 6px; }
+      .statusbar .center, .statusbar span:last-child { display: block; }
+      .settings-menu { width: 100%; }
     }
     @media (prefers-reduced-motion: reduce) {
       .theme-motion, .theme-motion span, .theme-preview, .theme-preview span { animation: none !important; }
@@ -713,10 +914,10 @@
       <button data-view="shop">Loja</button>
     </nav>
     <div class="profile">
-      <button class="sound" id="soundButton" title="Som ligado" aria-label="Desativar som">🔊</button>
+      <button class="sound menu-button" id="menuButton" title="Abrir menu" aria-label="Abrir menu">☰</button>
       <span class="coin-pill" title="Créditos da Arena">◈ <b id="coinValue">650</b></span>
       <i class="online"></i>
-      <span class="profile-copy"><small id="levelLabel">NÍVEL 12</small><b>FLAVIO</b></span>
+      <label class="profile-copy"><small id="levelLabel">NÍVEL 12</small><input class="player-name-input" id="playerNameInput" maxlength="20" value="FLAVIO" aria-label="Seu nome no ranking mundial" title="Seu nome no ranking mundial"></label>
       <span class="avatar">😊</span>
     </div>
   </header>
@@ -781,6 +982,31 @@
     <header class="modal-head"><div><small>BLOCO MANIA • FESTA ARCO-ÍRIS</small><h2 id="dialogTitle">MISSÕES DIVERTIDAS</h2></div><button id="closeDialog" aria-label="Fechar">×</button></header>
     <div class="modal-body" id="dialogBody"></div>
   </dialog>
+  <div class="settings-backdrop" id="settingsBackdrop"></div>
+  <aside class="settings-menu" id="settingsMenu" aria-hidden="true" aria-label="Menu de configurações">
+    <header class="settings-head"><div><small>MEU JOGO</small><h2>Configurações</h2></div><button id="closeSettings" aria-label="Fechar configurações">×</button></header>
+    <div class="settings-body">
+      <section class="settings-group">
+        <small>APARÊNCIA</small>
+        <div class="theme-choice" role="group" aria-label="Tema visual">
+          <button data-ui-theme="light">☀️ Claro</button>
+          <button data-ui-theme="dark">🌙 Escuro</button>
+        </div>
+      </section>
+      <section class="settings-group">
+        <small>ÁUDIO</small>
+        <label class="setting-row"><span><b>🎵 Música de fundo</b><i>Muda com cada cenário</i></span><input type="checkbox" id="musicToggle"></label>
+        <label class="volume-row"><span>Volume da música</span><input type="range" id="musicVolume" min="0" max="100" value="35" aria-label="Volume da música"></label>
+        <label class="setting-row"><span><b>🔊 Efeitos sonoros</b><i>Encaixes, linhas e avisos</i></span><input type="checkbox" id="effectsToggle"></label>
+      </section>
+      <section class="settings-group credits-card">
+        <small>CRÉDITOS</small>
+        <div class="credits-icon">🧩</div>
+        <h3>Bloco Mania</h3>
+        <p>Criado por <strong>Flavio Contini</strong></p>
+      </section>
+    </div>
+  </aside>
   <div class="toast" id="toast" role="status"><b>✦</b><span id="toastText"></span></div>
 
   <script>
@@ -790,7 +1016,7 @@
       const SUPABASE_URL = "https://bpqhisgayvcgiwzvappw.supabase.co";
       const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwcWhpc2dheXZjZ2l3enZhcHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1OTI3MjYsImV4cCI6MjEwMzE2ODcyNn0.KrfAK_R36r5kqPKqevPrKGBvLwpgG0bLV5FEbw6TyT8";
       const RANKING_TABLE = "Ranking Block Aren";
-      const PLAYER_NAME = "FLAVIO";
+      const DEFAULT_PLAYER_NAME = "FLAVIO";
       const PLAYER_COUNTRY = "BR";
 
       const SIZE = 10;
@@ -834,6 +1060,14 @@
         { id: "enchanted-forest", name: "FLORESTA ENCANTADA", description: "Borboletas, folhas e brilhos mágicos.", price: 900, icons: ["🦋","🍃","✨","🌼"] },
         { id: "dino-world", name: "MUNDO DOS DINOSSAUROS", description: "Dinossauros passeando em uma selva divertida.", price: 1100, icons: ["🦕","🦖","🌿","🌋"] }
       ];
+      const themeMusic = {
+        "rainbow-party": { notes: [523.25, 659.25, 783.99, 659.25, 587.33, 698.46], tempo: 420, wave: "triangle" },
+        "candy-kingdom": { notes: [659.25, 783.99, 987.77, 783.99, 698.46, 880], tempo: 360, wave: "sine" },
+        "ocean-world": { notes: [261.63, 329.63, 392, 329.63, 293.66, 349.23], tempo: 880, wave: "sine" },
+        "space-adventure": { notes: [220, 329.63, 440, 659.25, 493.88, 392], tempo: 650, wave: "triangle" },
+        "enchanted-forest": { notes: [392, 493.88, 587.33, 493.88, 440, 523.25], tempo: 720, wave: "sine" },
+        "dino-world": { notes: [196, 246.94, 293.66, 392, 293.66, 246.94], tempo: 500, wave: "square" },
+      };
       let worldPlayers = [
         { name: "LUNA.EXE", country: "🇧🇷", score: 48920, color: "lime" },
         { name: "KAIRO", country: "🇯🇵", score: 47110, color: "cyan" },
@@ -878,6 +1112,8 @@
       let pointerDrag = null;
       let suppressClickUntil = 0;
       let audioContext = null;
+      let musicTimer = 0;
+      let musicStep = 0;
       let blitzRemaining = 120;
       let motionThemeId = "";
       let reviveUsed = false;
@@ -917,7 +1153,7 @@
       }
 
       function loadProfile() {
-        const fallback = { bestScore: 18420, coins: 650, ownedThemes: ["rainbow-party"], activeTheme: "rainbow-party", lastMode: "classic", mapSelections: { classic: "foundation", blitz: "redline", zen: "open-garden" }, soundOn: true, stats: { placements: 0, lines: 0, bestCombo: 0 }, daily: { key: "", placements: 0, lines: 0 }, weekly: { key: "", placements: 0, lines: 0, score: 0 }, unlocked: [] };
+        const fallback = { playerName: DEFAULT_PLAYER_NAME, uiTheme: "light", musicOn: true, musicVolume: .35, bestScore: 18420, coins: 650, ownedThemes: ["rainbow-party"], activeTheme: "rainbow-party", lastMode: "classic", mapSelections: { classic: "foundation", blitz: "redline", zen: "open-garden" }, soundOn: true, stats: { placements: 0, lines: 0, bestCombo: 0 }, daily: { key: "", placements: 0, lines: 0 }, weekly: { key: "", placements: 0, lines: 0, score: 0 }, unlocked: [] };
         try {
           const saved = JSON.parse(localStorage.getItem("block-arena-html-profile"));
           const result = saved ? { ...fallback, ...saved, mapSelections: { ...fallback.mapSelections, ...saved.mapSelections }, ownedThemes: Array.isArray(saved.ownedThemes) ? saved.ownedThemes : fallback.ownedThemes, stats: { ...fallback.stats, ...saved.stats }, daily: { ...fallback.daily, ...saved.daily }, weekly: { ...fallback.weekly, ...saved.weekly } } : fallback;
@@ -967,6 +1203,20 @@
           : "🌎";
       }
 
+      function sanitizePlayerName(value) {
+        return String(value || "")
+          .replace(/[<>&"'`]/g, "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, 20) || DEFAULT_PLAYER_NAME;
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>'"]/g, (character) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;",
+        })[character]);
+      }
+
       function deviceId() {
         const storageKey = "block-mania-player-id";
         try {
@@ -1012,7 +1262,7 @@
             method: "POST",
             headers: supabaseHeaders({ "Content-Type": "application/json" }),
             body: JSON.stringify({
-              p_player_name: PLAYER_NAME,
+              p_player_name: profile.playerName || DEFAULT_PLAYER_NAME,
               p_score: score,
               p_country: PLAYER_COUNTRY,
               p_device_id: deviceId(),
@@ -1036,20 +1286,66 @@
         return metric === "score" ? profile.bestScore : (profile.stats[metric] || 0);
       }
 
+      function ensureAudioContext() {
+        audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+        if (audioContext.state === "suspended") void audioContext.resume();
+        return audioContext;
+      }
+
+      function stopBackgroundMusic() {
+        clearInterval(musicTimer);
+        musicTimer = 0;
+      }
+
+      function playBackgroundNote() {
+        if (!profile.musicOn || document.hidden) return;
+        try {
+          const context = ensureAudioContext();
+          const music = themeMusic[profile.activeTheme] || themeMusic["rainbow-party"];
+          const oscillator = context.createOscillator();
+          const gain = context.createGain();
+          const now = context.currentTime;
+          const duration = Math.min(.72, music.tempo / 1000 * .82);
+          const volume = Math.max(.0001, Number(profile.musicVolume) * .055);
+          oscillator.type = music.wave;
+          oscillator.frequency.setValueAtTime(music.notes[musicStep % music.notes.length], now);
+          gain.gain.setValueAtTime(.0001, now);
+          gain.gain.exponentialRampToValueAtTime(volume, now + .05);
+          gain.gain.exponentialRampToValueAtTime(.0001, now + duration);
+          oscillator.connect(gain).connect(context.destination);
+          oscillator.start(now);
+          oscillator.stop(now + duration + .03);
+          musicStep += 1;
+        } catch (_) {}
+      }
+
+      function startBackgroundMusic() {
+        if (!profile.musicOn) return;
+        stopBackgroundMusic();
+        const music = themeMusic[profile.activeTheme] || themeMusic["rainbow-party"];
+        musicStep = 0;
+        playBackgroundNote();
+        musicTimer = setInterval(playBackgroundNote, music.tempo);
+      }
+
+      function restartBackgroundMusic() {
+        if (musicTimer || audioContext) startBackgroundMusic();
+      }
+
       function playSound(type) {
         if (!soundOn) return;
         try {
-          audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
-          const osc = audioContext.createOscillator();
-          const gain = audioContext.createGain();
+          const context = ensureAudioContext();
+          const osc = context.createOscillator();
+          const gain = context.createGain();
           const notes = { place: 330, line: 660, combo: 880, error: 130, gameover: 90 };
           osc.type = type === "error" || type === "gameover" ? "sawtooth" : "sine";
-          osc.frequency.setValueAtTime(notes[type] || 330, audioContext.currentTime);
-          if (type === "line" || type === "combo") osc.frequency.exponentialRampToValueAtTime((notes[type] || 660) * 1.5, audioContext.currentTime + .14);
-          gain.gain.setValueAtTime(.08, audioContext.currentTime);
-          gain.gain.exponentialRampToValueAtTime(.001, audioContext.currentTime + .2);
-          osc.connect(gain).connect(audioContext.destination);
-          osc.start(); osc.stop(audioContext.currentTime + .21);
+          osc.frequency.setValueAtTime(notes[type] || 330, context.currentTime);
+          if (type === "line" || type === "combo") osc.frequency.exponentialRampToValueAtTime((notes[type] || 660) * 1.5, context.currentTime + .14);
+          gain.gain.setValueAtTime(.08, context.currentTime);
+          gain.gain.exponentialRampToValueAtTime(.001, context.currentTime + .2);
+          osc.connect(gain).connect(context.destination);
+          osc.start(); osc.stop(context.currentTime + .21);
         } catch (_) {}
       }
 
@@ -1191,7 +1487,7 @@
           }
           const button = document.createElement("button");
           button.className = `piece${selected === pieceIndex ? " selected" : ""}`;
-          button.draggable = true;
+          button.draggable = false;
           button.setAttribute("aria-label", `Selecionar peça ${piece.name}`);
           button.setAttribute("aria-pressed", String(selected === pieceIndex));
           const grid = document.createElement("span");
@@ -1319,15 +1615,18 @@
       }
 
       function rankings() {
-        const otherPlayers = worldPlayers.filter((player) => player.name.toUpperCase() !== PLAYER_NAME.toUpperCase());
+        const currentName = (profile.playerName || DEFAULT_PLAYER_NAME).toUpperCase();
+        const otherPlayers = worldPlayers.filter((player) => player.name.toUpperCase() !== currentName);
         return [...otherPlayers, { name: "VOCÊ", country: countryFlag(PLAYER_COUNTRY), score: profile.bestScore, color: "cyan" }]
           .sort((a, b) => b.score - a.score)
           .map((player, index) => ({ ...player, rank: index + 1 }));
       }
 
       function playerRow(player, full = false) {
-        const initials = player.name === "VOCÊ" ? "F7" : player.name.slice(0, 2);
-        return `<li class="${player.name === "VOCÊ" ? "user" : ""}"><span class="rank ${player.rank <= 3 ? "podium" : ""}">${String(player.rank).padStart(2,"0")}</span><span class="player-avatar ${player.color}">${initials}</span><span class="player-info"><b>${player.name}</b><small>${player.country} GLOBAL</small></span><strong class="player-score">${player.score.toLocaleString("pt-BR")}</strong></li>`;
+        const initials = player.name === "VOCÊ" ? (profile.playerName || DEFAULT_PLAYER_NAME).slice(0, 2) : player.name.slice(0, 2);
+        const safeName = escapeHtml(player.name);
+        const safeInitials = escapeHtml(initials);
+        return `<li class="${player.name === "VOCÊ" ? "user" : ""}"><span class="rank ${player.rank <= 3 ? "podium" : ""}">${String(player.rank).padStart(2,"0")}</span><span class="player-avatar ${player.color}">${safeInitials}</span><span class="player-info"><b>${safeName}</b><small>${player.country} GLOBAL</small></span><strong class="player-score">${player.score.toLocaleString("pt-BR")}</strong></li>`;
       }
 
       function renderThemeMotion() {
@@ -1357,12 +1656,14 @@
         $("#levelLabel").textContent = `NÍVEL ${12 + Math.floor(profile.stats.placements / 30)}`;
         $("#rankLabel").textContent = `#${user.rank} NA TURMA`;
         $("#leaderboard").innerHTML = list.slice(0, 4).map((player) => playerRow(player)).join("");
-        $("#yourRank").innerHTML = `<span class="rank">${String(user.rank).padStart(2,"0")}</span><span class="player-avatar cyan">F7</span><span class="player-info"><b>VOCÊ</b><small>🇧🇷 BRASIL</small></span><strong class="player-score">${profile.bestScore.toLocaleString("pt-BR")}</strong>`;
+        const userInitials = escapeHtml((profile.playerName || DEFAULT_PLAYER_NAME).slice(0, 2));
+        $("#yourRank").innerHTML = `<span class="rank">${String(user.rank).padStart(2,"0")}</span><span class="player-avatar cyan">${userInitials}</span><span class="player-info"><b>VOCÊ</b><small>🇧🇷 BRASIL</small></span><strong class="player-score">${profile.bestScore.toLocaleString("pt-BR")}</strong>`;
         const percent = Math.round(profile.unlocked.length / achievements.length * 100);
         $("#achievementText").textContent = `${profile.unlocked.length} de ${achievements.length} liberadas`;
         $("#achievementPercent").textContent = `${percent}% concluído`;
         $("#achievementValue").textContent = `${percent}%`;
         $("#coinValue").textContent = profile.coins.toLocaleString("pt-BR");
+        if (document.activeElement !== $("#playerNameInput")) $("#playerNameInput").value = profile.playerName || DEFAULT_PLAYER_NAME;
         document.body.dataset.arenaTheme = profile.activeTheme;
         renderThemeMotion();
         const currentMap = mapFor();
@@ -1488,6 +1789,7 @@
         saveProfile();
         renderStatus();
         renderShop();
+        restartBackgroundMusic();
       }
 
       function syncMapSelector() {
@@ -1501,7 +1803,46 @@
       function renderFullRanking() {
         const list = rankings();
         const user = list.find((player) => player.name === "VOCÊ");
-        $("#dialogBody").innerHTML = `<div class="ranking-summary"><div><small>SUA POSIÇÃO</small><strong>#${user.rank}</strong><span>LIGA ESTRELA</span></div><div><small>SEU RECORDE</small><strong>${profile.bestScore.toLocaleString("pt-BR")}</strong><span>SALVO NESTE APARELHO</span></div><div><small>FESTA</small><strong>08</strong><span>12D 08H</span></div></div><ol class="full-ranking">${list.map((player) => playerRow(player, true)).join("")}</ol><p class="ranking-note">Placar de demonstração • seu progresso fica salvo neste navegador</p>`;
+        $("#dialogBody").innerHTML = `<div class="ranking-summary"><div><small>SUA POSIÇÃO</small><strong>#${user.rank}</strong><span>LIGA ESTRELA</span></div><div><small>SEU RECORDE</small><strong>${profile.bestScore.toLocaleString("pt-BR")}</strong><span>SALVO NESTE APARELHO</span></div><div><small>FESTA</small><strong>08</strong><span>12D 08H</span></div></div><ol class="full-ranking">${list.map((player) => playerRow(player, true)).join("")}</ol><p class="ranking-note">Ranking mundial conectado ao Supabase • atualização automática</p>`;
+      }
+
+      function savePlayerName() {
+        const input = $("#playerNameInput");
+        const nextName = sanitizePlayerName(input.value).toUpperCase();
+        const changed = nextName !== profile.playerName;
+        profile.playerName = nextName;
+        input.value = nextName;
+        saveProfile();
+        renderStatus();
+        if (changed) {
+          void submitWorldScore();
+          notify(`Nome do ranking atualizado para ${nextName}. 🌟`);
+        }
+      }
+
+      function applySettings() {
+        profile.uiTheme = profile.uiTheme === "dark" ? "dark" : "light";
+        profile.musicVolume = Math.max(0, Math.min(1, Number(profile.musicVolume) || 0));
+        document.body.dataset.uiTheme = profile.uiTheme;
+        document.querySelectorAll(".theme-choice [data-ui-theme]").forEach((button) => button.classList.toggle("active", button.dataset.uiTheme === profile.uiTheme));
+        $("#musicToggle").checked = profile.musicOn !== false;
+        $("#musicVolume").value = String(Math.round(profile.musicVolume * 100));
+        $("#effectsToggle").checked = soundOn;
+      }
+
+      function openSettings() {
+        applySettings();
+        $("#settingsMenu").classList.add("open");
+        $("#settingsBackdrop").classList.add("show");
+        $("#settingsMenu").setAttribute("aria-hidden", "false");
+        $("#closeSettings").focus();
+      }
+
+      function closeSettings() {
+        $("#settingsMenu").classList.remove("open");
+        $("#settingsBackdrop").classList.remove("show");
+        $("#settingsMenu").setAttribute("aria-hidden", "true");
+        $("#menuButton").focus();
       }
 
       document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", () => openPanel(button.dataset.view)));
@@ -1512,6 +1853,36 @@
       $("#restartButton").addEventListener("click", newGame);
       $("#reviveButton").addEventListener("click", reviveGame);
       $("#playAgain").addEventListener("click", newGame);
+      $("#playerNameInput").addEventListener("change", savePlayerName);
+      $("#playerNameInput").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") { event.preventDefault(); event.currentTarget.blur(); }
+      });
+      $("#menuButton").addEventListener("click", openSettings);
+      $("#closeSettings").addEventListener("click", closeSettings);
+      $("#settingsBackdrop").addEventListener("click", closeSettings);
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && $("#settingsMenu").classList.contains("open")) closeSettings();
+      });
+      document.querySelectorAll(".theme-choice [data-ui-theme]").forEach((button) => button.addEventListener("click", () => {
+        profile.uiTheme = button.dataset.uiTheme;
+        saveProfile();
+        applySettings();
+      }));
+      $("#musicToggle").addEventListener("change", (event) => {
+        profile.musicOn = event.target.checked;
+        saveProfile();
+        if (profile.musicOn) startBackgroundMusic(); else stopBackgroundMusic();
+      });
+      $("#musicVolume").addEventListener("input", (event) => {
+        profile.musicVolume = Number(event.target.value) / 100;
+        saveProfile();
+      });
+      $("#effectsToggle").addEventListener("change", (event) => {
+        soundOn = event.target.checked;
+        profile.soundOn = soundOn;
+        saveProfile();
+        if (soundOn) playSound("place");
+      });
       $("#modeSelect").addEventListener("change", (event) => {
         mode = event.target.value;
         profile.lastMode = mode;
@@ -1529,22 +1900,17 @@
         saveProfile();
         newGame();
       });
-      $("#soundButton").addEventListener("click", () => {
-        soundOn = !soundOn;
-        $("#soundButton").textContent = soundOn ? "🔊" : "🔇";
-        $("#soundButton").title = soundOn ? "Som ligado" : "Som desligado";
-        $("#soundButton").setAttribute("aria-label", soundOn ? "Desativar som" : "Ativar som");
-        profile.soundOn = soundOn;
-        saveProfile();
+      document.addEventListener("pointerdown", () => startBackgroundMusic(), { once: true });
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stopBackgroundMusic();
+        else if (profile.musicOn && audioContext) startBackgroundMusic();
       });
 
       $("#modeSelect").value = mode;
       $("#modeTitle").textContent = mode === "blitz" ? "BLITZ" : mode === "zen" ? "ZEN" : "CLÁSSICO";
       $("#modeHint").textContent = mode === "zen" ? "BRINQUE SEM PRESSA" : mode === "blitz" ? "CORRIDA CONTRA O TEMPO" : "BRINCADEIRA CLÁSSICA";
       $("#modeClock").textContent = mode === "blitz" ? "2:00" : "10×10";
-      $("#soundButton").textContent = soundOn ? "🔊" : "🔇";
-      $("#soundButton").title = soundOn ? "Som ligado" : "Som desligado";
-      $("#soundButton").setAttribute("aria-label", soundOn ? "Desativar som" : "Ativar som");
+      applySettings();
       syncMapSelector();
       updateTimers();
       setInterval(updateTimers, 1000);
