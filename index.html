@@ -509,6 +509,7 @@
     .violet { background: #9c75e8 !important; }
     .orange { background: #ff9f55 !important; }
     .cell.preview { opacity: .82; border-color: #fff; transform: scale(.95); }
+    .cell.preview.valid { background: #58d889 !important; box-shadow: inset 0 3px 0 rgba(255,255,255,.42), 0 0 0 2px rgba(38,158,96,.24); }
     .cell.invalid { background: #ff7b9c !important; }
     .corner { display: none; }
     .tray { gap: 12px; margin-top: 21px; }
@@ -680,8 +681,38 @@
       background: transparent;
       box-shadow: none;
       filter: none;
+      transform: translate(-50%, -50%) scale(1.18);
+      transform-origin: center;
+      transition: filter .12s ease;
     }
-    .drag-ghost .mini-grid { filter: none; }
+    .drag-ghost .mini-grid { filter: none; animation: piece-fly-in .16s cubic-bezier(.2,.85,.3,1) both; }
+    .drag-ghost.drop-valid .mini-grid { filter: drop-shadow(0 7px 8px rgba(34, 177, 103, .45)); }
+    .drag-ghost.drop-invalid .mini-grid { filter: grayscale(.15) drop-shadow(0 7px 8px rgba(237, 75, 112, .42)); }
+    .drag-ghost.returning {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(.62);
+      transition: left .18s ease, top .18s ease, opacity .18s ease, transform .18s ease;
+    }
+    .drag-ghost::after {
+      position: absolute;
+      right: -17px;
+      bottom: -14px;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      color: #fff;
+      font: 900 17px/1 "Trebuchet MS", sans-serif;
+      box-shadow: 0 5px 12px rgba(74, 50, 105, .24);
+    }
+    .drag-ghost.drop-valid::after { content: "✓"; background: #35bf78; }
+    .drag-ghost.drop-invalid::after { content: "×"; background: #ef5e80; }
+    @keyframes piece-fly-in {
+      from { opacity: .2; transform: translateY(42px) scale(.78); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
     .menu-button { font-size: 21px; font-weight: 900; }
     .settings-backdrop { position: fixed; inset: 0; z-index: 150; visibility: hidden; opacity: 0; background: rgba(55,39,83,.38); backdrop-filter: blur(4px); transition: opacity .25s ease, visibility .25s ease; }
     .settings-backdrop.show { visibility: visible; opacity: 1; }
@@ -724,6 +755,30 @@
     .menu-links button span { font-size: 18px; text-align: center; }
     .menu-links button b { font-size: 12px; }
     .menu-links button i { color: #9a8aaa; font-style: normal; }
+    .tutorial-menu-button { width: 100%; height: 42px; margin-top: 10px; border: 2px dashed #cdbbea; border-radius: 13px; background: #faf7ff; color: #714db4; font-weight: 900; cursor: pointer; }
+    .install-app-button { width: 100%; height: 44px; margin-top: 8px; border: 0; border-radius: 13px; background: linear-gradient(135deg, #7cda83, #4ccbd8); color: #24564e; font-weight: 900; box-shadow: 0 5px 0 #3299a5; cursor: pointer; }
+    .install-app-button[hidden] { display: none; }
+    .profile-settings > p { margin: 6px 0 12px; color: #81758f; font-size: 10px; }
+    .avatar-picker { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+    .avatar-picker button { aspect-ratio: 1; display: grid; place-items: center; padding: 0; border: 2px solid #e2d8ee; border-radius: 11px; background: #faf7ff; font-size: 20px; cursor: pointer; }
+    .avatar-picker button.active { border-color: #7f5cc5; background: #eee5ff; box-shadow: 0 0 0 3px rgba(127,92,197,.12); }
+    .country-field { display: grid; gap: 6px; margin-top: 13px; color: #756985; font-size: 10px; font-weight: 900; }
+    .country-field select { width: 100%; height: 40px; padding: 0 10px; border: 2px solid #ded3ed; border-radius: 12px; background: #fff; color: #55426f; font-weight: 900; }
+    .tutorial-overlay { position: fixed; inset: 0; z-index: 200; visibility: hidden; opacity: 0; display: grid; place-items: center; padding: 18px; background: rgba(55,39,83,.55); backdrop-filter: blur(7px); transition: opacity .2s ease, visibility .2s ease; }
+    .tutorial-overlay.show { visibility: visible; opacity: 1; }
+    .tutorial-card { position: relative; width: min(440px, 100%); padding: 28px; border: 3px solid #fff; border-radius: 28px; background: #fff; color: #49375f; text-align: center; box-shadow: 0 18px 0 rgba(73,49,116,.16), 0 35px 70px rgba(45,28,75,.24); }
+    .tutorial-close { position: absolute; top: 14px; right: 14px; width: 38px; height: 38px; border: 2px solid #e2d7ee; border-radius: 12px; background: #faf7ff; color: #7656a8; font-size: 21px; cursor: pointer; }
+    .tutorial-progress { color: #9687aa; font-size: 10px; font-weight: 900; }
+    .tutorial-illustration { width: 92px; height: 92px; display: grid; place-items: center; margin: 18px auto; border-radius: 28px; background: linear-gradient(145deg, #fff2ad, #f0dfff); font-size: 48px; box-shadow: inset 0 -8px 0 rgba(111,76,171,.10); }
+    .tutorial-card > small { color: #9064cd; font-size: 9px; font-weight: 900; letter-spacing: .7px; }
+    .tutorial-card h2 { margin: 7px 0; color: #6845aa; font-size: 25px; }
+    .tutorial-card p { min-height: 48px; margin: 0; color: #786d87; font-size: 13px; line-height: 1.5; }
+    .tutorial-dots { display: flex; justify-content: center; gap: 7px; margin: 18px 0; }
+    .tutorial-dots i { width: 8px; height: 8px; border-radius: 50%; background: #ddd3e9; }
+    .tutorial-dots i.active { width: 24px; border-radius: 999px; background: #8963cb; }
+    .tutorial-actions { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; }
+    .tutorial-actions button { height: 46px; border: 2px solid #ded2ec; border-radius: 14px; background: #faf7ff; color: #7355a4; font-weight: 900; cursor: pointer; }
+    .tutorial-actions button:last-child { border-color: #7ccf85; background: linear-gradient(135deg, #8ee58e, #56ceda); color: #285a50; box-shadow: 0 5px 0 #3a9eaa; }
 
     body[data-ui-theme="dark"] {
       --panel: #251d35;
@@ -821,6 +876,17 @@
     body[data-ui-theme="dark"] .menu-links button { color: #d8cde6; }
     body[data-ui-theme="dark"] .menu-links button:hover { border-color: #514067; background: #302442; }
     body[data-ui-theme="dark"] .menu-links button.active { border-color: #7457a0; background: #412f5b; color: #fff; }
+    body[data-ui-theme="dark"] .tutorial-menu-button,
+    body[data-ui-theme="dark"] .avatar-picker button,
+    body[data-ui-theme="dark"] .country-field select { border-color: #55456c; background: #302442; color: #eee5fa; }
+    body[data-ui-theme="dark"] .avatar-picker button.active { border-color: #a987ed; background: #4a356a; }
+    body[data-ui-theme="dark"] .profile-settings > p,
+    body[data-ui-theme="dark"] .country-field { color: #b6aac4; }
+    body[data-ui-theme="dark"] .tutorial-card { border-color: #5a4774; background: #251d35; color: #f4edff; box-shadow: 0 18px 0 rgba(8,5,13,.30), 0 35px 70px rgba(0,0,0,.35); }
+    body[data-ui-theme="dark"] .tutorial-close,
+    body[data-ui-theme="dark"] .tutorial-actions button { border-color: #56436e; background: #302442; color: #e8ddf7; }
+    body[data-ui-theme="dark"] .tutorial-card h2 { color: #d8c2ff; }
+    body[data-ui-theme="dark"] .tutorial-card p { color: #b9acc7; }
 
     @keyframes scenery-colors {
       from { background-position: 0% 20%; }
@@ -934,8 +1000,13 @@
       .profile-copy { width: 84px; }
       .player-name-input { padding-inline: 6px; font-size: 10px; }
     }
+    @media (pointer: coarse) {
+      .drag-ghost { transform: translate(-50%, -50%) scale(1.32); }
+      .piece { min-height: 78px; }
+    }
     @media (prefers-reduced-motion: reduce) {
       .theme-motion, .theme-motion span, .theme-preview, .theme-preview span { animation: none !important; }
+      .drag-ghost .mini-grid { animation: none !important; }
     }
   </style>
 </head>
@@ -1026,6 +1097,16 @@
           <button data-view="achievements"><span>🏆</span><b>Conquistas</b><i>→</i></button>
           <button data-view="shop"><span>🛍️</span><b>Loja</b><i>→</i></button>
         </nav>
+        <button class="tutorial-menu-button" id="openTutorial">📖 Ver tutorial</button>
+        <button class="install-app-button" id="installApp" hidden>📲 Instalar no celular</button>
+      </section>
+      <section class="settings-group profile-settings">
+        <small>SEU PERFIL MUNDIAL</small>
+        <p>Escolha como você aparece no ranking.</p>
+        <div class="avatar-picker" role="group" aria-label="Escolha seu avatar">
+          <button data-avatar="😊">😊</button><button data-avatar="🦊">🦊</button><button data-avatar="🐼">🐼</button><button data-avatar="🦁">🦁</button><button data-avatar="🦄">🦄</button><button data-avatar="🚀">🚀</button>
+        </div>
+        <label class="country-field"><span>País</span><select id="countrySelect" aria-label="Seu país no ranking"><option value="BR">🇧🇷 Brasil</option><option value="PT">🇵🇹 Portugal</option><option value="AR">🇦🇷 Argentina</option><option value="MX">🇲🇽 México</option><option value="US">🇺🇸 Estados Unidos</option><option value="ES">🇪🇸 Espanha</option><option value="JP">🇯🇵 Japão</option></select></label>
       </section>
       <section class="settings-group">
         <small>APARÊNCIA</small>
@@ -1048,6 +1129,18 @@
       </section>
     </div>
   </aside>
+  <div class="tutorial-overlay" id="tutorialOverlay" aria-hidden="true">
+    <section class="tutorial-card" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
+      <button class="tutorial-close" id="closeTutorial" aria-label="Fechar tutorial">×</button>
+      <div class="tutorial-progress" id="tutorialProgress">1 de 4</div>
+      <div class="tutorial-illustration" id="tutorialIcon">🧩</div>
+      <small id="tutorialTag">COMO JOGAR</small>
+      <h2 id="tutorialTitle">Encaixe os bloquinhos</h2>
+      <p id="tutorialText">Toque ou arraste uma peça colorida até um espaço livre do tabuleiro.</p>
+      <div class="tutorial-dots" id="tutorialDots" aria-hidden="true"></div>
+      <div class="tutorial-actions"><button id="tutorialBack">Voltar</button><button id="tutorialNext">Próximo →</button></div>
+    </section>
+  </div>
   <div class="toast" id="toast" role="status"><b>✦</b><span id="toastText"></span></div>
 
   <script>
@@ -1109,6 +1202,12 @@
         "enchanted-forest": { notes: [392, 493.88, 587.33, 493.88, 440, 523.25], tempo: 720, wave: "sine" },
         "dino-world": { notes: [196, 246.94, 293.66, 392, 293.66, 246.94], tempo: 500, wave: "square" },
       };
+      const tutorialSteps = [
+        { icon: "🧩", tag: "COMO JOGAR", title: "Encaixe os bloquinhos", text: "Toque ou arraste uma peça colorida até um espaço livre do tabuleiro." },
+        { icon: "🌈", tag: "MARQUE PONTOS", title: "Complete linhas", text: "Preencha uma linha inteira, na horizontal ou vertical, para limpar os blocos e ganhar pontos." },
+        { icon: "🛍️", tag: "PERSONALIZE", title: "Visite a loja", text: "Use suas estrelinhas para comprar cenários. Cada tema tem animação e música próprias." },
+        { icon: "💚", tag: "CHANCE ESPECIAL", title: "Use o reviver", text: "Na primeira vez que faltar espaço, o reviver remove blocos e permite continuar a rodada." },
+      ];
       let worldPlayers = [
         { name: "LUNA.EXE", country: "🇧🇷", score: 48920, color: "lime" },
         { name: "KAIRO", country: "🇯🇵", score: 47110, color: "cyan" },
@@ -1158,6 +1257,9 @@
       let blitzRemaining = 120;
       let motionThemeId = "";
       let reviveUsed = false;
+      let tutorialStep = 0;
+      let rankingSessionId = "";
+      let deferredInstallPrompt = null;
 
       const $ = (selector) => document.querySelector(selector);
       const boardElement = $("#board");
@@ -1194,7 +1296,7 @@
       }
 
       function loadProfile() {
-        const fallback = { playerName: DEFAULT_PLAYER_NAME, uiTheme: "light", musicOn: true, musicVolume: .35, bestScore: 18420, coins: 650, ownedThemes: ["rainbow-party"], activeTheme: "rainbow-party", lastMode: "classic", mapSelections: { classic: "foundation", blitz: "redline", zen: "open-garden" }, soundOn: true, stats: { placements: 0, lines: 0, bestCombo: 0 }, daily: { key: "", placements: 0, lines: 0 }, weekly: { key: "", placements: 0, lines: 0, score: 0 }, unlocked: [] };
+        const fallback = { playerName: DEFAULT_PLAYER_NAME, avatar: "😊", country: "BR", tutorialSeen: false, uiTheme: "light", musicOn: true, musicVolume: .35, bestScore: 18420, coins: 650, ownedThemes: ["rainbow-party"], activeTheme: "rainbow-party", lastMode: "classic", mapSelections: { classic: "foundation", blitz: "redline", zen: "open-garden" }, soundOn: true, stats: { placements: 0, lines: 0, bestCombo: 0 }, daily: { key: "", placements: 0, lines: 0 }, weekly: { key: "", placements: 0, lines: 0, score: 0 }, unlocked: [] };
         try {
           const saved = JSON.parse(localStorage.getItem("block-arena-html-profile"));
           const result = saved ? { ...fallback, ...saved, mapSelections: { ...fallback.mapSelections, ...saved.mapSelections }, ownedThemes: Array.isArray(saved.ownedThemes) ? saved.ownedThemes : fallback.ownedThemes, stats: { ...fallback.stats, ...saved.stats }, daily: { ...fallback.daily, ...saved.daily }, weekly: { ...fallback.weekly, ...saved.weekly } } : fallback;
@@ -1227,6 +1329,47 @@
         } catch (_) {
           // O jogo continua funcionando mesmo se o navegador bloquear dados locais.
         }
+      }
+
+      function saveGameState() {
+        try {
+          localStorage.setItem("block-mania-current-game", JSON.stringify({
+            version: 1,
+            savedAt: Date.now(),
+            mode,
+            currentMapId,
+            board,
+            tray,
+            score,
+            combo,
+            gameStats,
+            blitzRemaining,
+            reviveUsed,
+            rankingSessionId,
+          }));
+        } catch (_) {}
+      }
+
+      function restoreGameState() {
+        try {
+          const saved = JSON.parse(localStorage.getItem("block-mania-current-game"));
+          if (!saved || saved.version !== 1 || Date.now() - saved.savedAt > 7 * 86400000) return false;
+          if (!maps[saved.mode] || !maps[saved.mode].some((item) => item.id === saved.currentMapId)) return false;
+          if (!Array.isArray(saved.board) || saved.board.length !== SIZE * SIZE || !Array.isArray(saved.tray) || saved.tray.length !== 3) return false;
+          mode = saved.mode;
+          currentMapId = saved.currentMapId;
+          board = saved.board.map((color) => colors.includes(color) ? color : null);
+          tray = saved.tray.map((piece) => piece && Array.isArray(piece.cells) ? piece : null);
+          score = Math.max(0, Number(saved.score) || 0);
+          combo = Math.max(0, Number(saved.combo) || 0);
+          gameStats = { placements: 0, lines: 0, bestCombo: 0, score, ...(saved.gameStats || {}) };
+          blitzRemaining = Math.max(0, Math.min(120, Number(saved.blitzRemaining) || 0));
+          reviveUsed = Boolean(saved.reviveUsed);
+          rankingSessionId = typeof saved.rankingSessionId === "string" ? saved.rankingSessionId : "";
+          profile.lastMode = mode;
+          profile.mapSelections[mode] = currentMapId;
+          return true;
+        } catch (_) { return false; }
       }
 
       function supabaseHeaders(extra = {}) {
@@ -1277,16 +1420,21 @@
       async function loadWorldRanking() {
         try {
           const table = encodeURIComponent(RANKING_TABLE);
-          const fields = "player_name,score,country";
-          const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=${fields}&order=score.desc&limit=20`, {
+          let fields = "player_name,score,country,avatar";
+          let response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=${fields}&order=score.desc&limit=20`, {
             headers: supabaseHeaders({ Accept: "application/json" }),
           });
+          if (response.status === 400) {
+            fields = "player_name,score,country";
+            response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=${fields}&order=score.desc&limit=20`, { headers: supabaseHeaders({ Accept: "application/json" }) });
+          }
           if (!response.ok) throw new Error(`Ranking indisponível (${response.status})`);
           const players = await response.json();
           const palette = ["lime", "cyan", "violet", "orange"];
           worldPlayers = players.map((player, index) => ({
             name: String(player.player_name || "JOGADOR").slice(0, 20),
             country: countryFlag(player.country),
+            avatar: player.avatar || "",
             score: Math.max(0, Number(player.score) || 0),
             color: palette[index % palette.length],
           }));
@@ -1296,20 +1444,44 @@
         }
       }
 
+      async function startRankingSession() {
+        try {
+          const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/start_block_arena_session`, {
+            method: "POST",
+            headers: supabaseHeaders({ "Content-Type": "application/json" }),
+            body: JSON.stringify({ p_device_id: deviceId() }),
+          });
+          if (!response.ok) return;
+          rankingSessionId = String(await response.json()).replace(/^"|"$/g, "");
+          saveGameState();
+        } catch (_) {}
+      }
+
       async function submitWorldScore() {
         if (score <= 0) return;
         try {
-          const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/submit_block_arena_score`, {
-            method: "POST",
-            headers: supabaseHeaders({ "Content-Type": "application/json" }),
-            body: JSON.stringify({
-              p_player_name: profile.playerName || DEFAULT_PLAYER_NAME,
-              p_score: score,
-              p_country: PLAYER_COUNTRY,
-              p_device_id: deviceId(),
-            }),
-          });
+          const payload = {
+            p_player_name: profile.playerName || DEFAULT_PLAYER_NAME,
+            p_score: score,
+            p_country: profile.country || "BR",
+            p_device_id: deviceId(),
+            p_avatar: profile.avatar || "😊",
+          };
+          let response;
+          if (rankingSessionId) {
+            response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/submit_block_arena_score_v2`, {
+              method: "POST",
+              headers: supabaseHeaders({ "Content-Type": "application/json" }),
+              body: JSON.stringify({ ...payload, p_session_id: rankingSessionId }),
+            });
+          }
+          if (!response || response.status === 404) {
+            delete payload.p_avatar;
+            response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/submit_block_arena_score`, { method: "POST", headers: supabaseHeaders({ "Content-Type": "application/json" }), body: JSON.stringify(payload) });
+          }
           if (!response.ok) throw new Error(`Pontuação não enviada (${response.status})`);
+          rankingSessionId = "";
+          void startRankingSession();
           await loadWorldRanking();
         } catch (error) {
           console.warn("A pontuação ficou salva apenas neste aparelho.", error);
@@ -1404,7 +1576,7 @@
 
       function showNoMoves() {
         const canRevive = !reviveUsed;
-        void submitWorldScore();
+        if (!canRevive) void submitWorldScore();
         $("#finalScore").textContent = `${formatScore(score)} PTS`;
         $("#gameOverMessage").textContent = canRevive ? "FICOU SEM ESPAÇO? VOCÊ TEM UMA CHANCE!" : "VOCÊ JOGOU MUITO BEM!";
         $("#gameOverTitle").textContent = canRevive ? "USE SEU REVIVER" : "FIM DA RODADA";
@@ -1453,6 +1625,7 @@
           $("#gameOver").classList.remove("show");
           $("#reviveButton").disabled = false;
           render();
+          saveGameState();
           playSound("combo");
           notify(`Reviver usado! ${removed.size} bloquinhos saíram do caminho. 💚`);
         }, 340);
@@ -1502,7 +1675,7 @@
       function showPreview(index) {
         const piece = selected === null ? null : tray[selected];
         clearPreview();
-        if (!piece) return;
+        if (!piece) return false;
         hovered = index;
         const baseRow = Math.floor(index / SIZE);
         const baseCol = index % SIZE;
@@ -1512,8 +1685,59 @@
           const targetCol = baseCol + col;
           if (targetRow < 0 || targetCol < 0 || targetRow >= SIZE || targetCol >= SIZE) return;
           const target = boardElement.querySelector(`[data-index="${targetRow * SIZE + targetCol}"]`);
-          if (target) target.classList.add("preview", valid ? piece.color : "invalid");
+          if (target) target.classList.add("preview", valid ? "valid" : "invalid");
         });
+        return valid;
+      }
+
+      function prepareDragControl(piece) {
+        if (!pointerDrag) return;
+        const height = Math.max(...piece.cells.map(([row]) => row)) + 1;
+        const width = Math.max(...piece.cells.map(([, col]) => col)) + 1;
+        const firstCell = boardElement.querySelector('[data-index="0"]')?.getBoundingClientRect();
+        const rightCell = boardElement.querySelector(`[data-index="${SIZE - width}"]`)?.getBoundingClientRect();
+        const bottomCell = boardElement.querySelector(`[data-index="${(SIZE - height) * SIZE}"]`)?.getBoundingClientRect();
+        if (!firstCell || !rightCell || !bottomCell) return;
+        const center = (rect, axis) => axis === "x" ? rect.left + rect.width / 2 : rect.top + rect.height / 2;
+        pointerDrag.minTargetX = center(firstCell, "x");
+        pointerDrag.maxTargetX = center(rightCell, "x");
+        pointerDrag.minTargetY = center(firstCell, "y");
+        pointerDrag.maxTargetY = center(bottomCell, "y");
+        pointerDrag.startTargetX = Math.min(pointerDrag.maxTargetX, Math.max(pointerDrag.minTargetX, pointerDrag.startX));
+        pointerDrag.startTargetY = pointerDrag.maxTargetY;
+      }
+
+      function getDragPoint(event) {
+        if (!pointerDrag || pointerDrag.startTargetX === undefined) return { x: event.clientX, y: event.clientY };
+        const coarsePointer = event.pointerType === "touch" || window.matchMedia?.("(pointer: coarse)").matches;
+        const gain = coarsePointer ? 1.08 : 1;
+        const x = pointerDrag.startTargetX + (event.clientX - pointerDrag.startX) * gain;
+        const y = pointerDrag.startTargetY + (event.clientY - pointerDrag.startY) * gain;
+        return {
+          x: Math.min(pointerDrag.maxTargetX, Math.max(pointerDrag.minTargetX, x)),
+          y: Math.min(pointerDrag.maxTargetY, Math.max(pointerDrag.minTargetY, y))
+        };
+      }
+
+      function getDragCell(event) {
+        const point = getDragPoint(event);
+        return document.elementFromPoint(point.x, point.y)?.closest(".cell") || null;
+      }
+
+      function updateDragFeedback(event) {
+        if (!pointerDrag?.ghost) return null;
+        const point = getDragPoint(event);
+        pointerDrag.ghost.style.left = `${point.x}px`;
+        pointerDrag.ghost.style.top = `${point.y}px`;
+        const cell = getDragCell(event);
+        const valid = cell ? showPreview(Number(cell.dataset.index)) : false;
+        pointerDrag.ghost.classList.toggle("drop-valid", valid);
+        pointerDrag.ghost.classList.toggle("drop-invalid", !valid);
+        if (valid && !pointerDrag.wasValid) {
+          try { navigator.vibrate?.(12); } catch (_) {}
+        }
+        pointerDrag.wasValid = valid;
+        return cell;
       }
 
       function renderTray() {
@@ -1543,6 +1767,19 @@
           const label = document.createElement("small");
           label.textContent = piece.name;
           button.append(grid, label);
+          const beginPointerDrag = (event) => {
+            if (!pointerDrag || pointerDrag.ghost) return;
+            selected = pieceIndex;
+            const ghost = document.createElement("div");
+            ghost.className = "drag-ghost";
+            ghost.appendChild(grid.cloneNode(true));
+            document.body.appendChild(ghost);
+            pointerDrag.ghost = ghost;
+            prepareDragControl(piece);
+            button.classList.add("dragging", "selected");
+            button.setAttribute("aria-pressed", "true");
+            updateDragFeedback(event);
+          };
           button.addEventListener("click", () => {
             if (Date.now() < suppressClickUntil) return;
             selected = selected === pieceIndex ? null : pieceIndex;
@@ -1562,41 +1799,49 @@
           });
           button.addEventListener("pointerdown", (event) => {
             if (!event.isPrimary || event.button !== 0) return;
-            pointerDrag = { id: event.pointerId, pieceIndex, startX: event.clientX, startY: event.clientY, ghost: null };
+            pointerDrag = { id: event.pointerId, pieceIndex, startX: event.clientX, startY: event.clientY, ghost: null, wasValid: false, hasMoved: false };
             button.setPointerCapture?.(event.pointerId);
+            const coarsePointer = event.pointerType === "touch" || window.matchMedia?.("(pointer: coarse)").matches;
+            if (coarsePointer) beginPointerDrag(event);
           });
           button.addEventListener("pointermove", (event) => {
             if (!pointerDrag || pointerDrag.id !== event.pointerId) return;
             const moved = Math.hypot(event.clientX - pointerDrag.startX, event.clientY - pointerDrag.startY);
             if (moved < 7 && !pointerDrag.ghost) return;
+            if (moved >= 5) pointerDrag.hasMoved = true;
             event.preventDefault();
-            if (!pointerDrag.ghost) {
-              selected = pieceIndex;
-              const ghost = document.createElement("div");
-              ghost.className = "drag-ghost";
-              ghost.appendChild(grid.cloneNode(true));
-              document.body.appendChild(ghost);
-              pointerDrag.ghost = ghost;
-              button.classList.add("dragging", "selected");
-            }
-            pointerDrag.ghost.style.left = `${event.clientX}px`;
-            pointerDrag.ghost.style.top = `${event.clientY}px`;
-            const cell = document.elementFromPoint(event.clientX, event.clientY)?.closest(".cell");
-            if (cell) showPreview(Number(cell.dataset.index)); else clearPreview();
+            if (!pointerDrag.ghost) beginPointerDrag(event);
+            updateDragFeedback(event);
           });
           const finishPointer = (event) => {
             if (!pointerDrag || pointerDrag.id !== event.pointerId) return;
-            const wasDragging = Boolean(pointerDrag.ghost);
-            const cell = document.elementFromPoint(event.clientX, event.clientY)?.closest(".cell");
-            pointerDrag.ghost?.remove();
+            const dragState = pointerDrag;
+            const ghost = dragState.ghost;
+            const wasDragging = Boolean(ghost);
+            const cell = wasDragging && event.type !== "pointercancel" ? getDragCell(event) : null;
+            const target = cell ? Number(cell.dataset.index) : -1;
+            const targetRow = Math.floor(target / SIZE);
+            const targetCol = target % SIZE;
+            const validDrop = dragState.hasMoved && target >= 0 && canPlace(piece, targetRow, targetCol);
             pointerDrag = null;
             button.classList.remove("dragging");
             clearPreview();
             if (wasDragging) {
               suppressClickUntil = Date.now() + 350;
-              if (cell) {
-                const target = Number(cell.dataset.index);
-                placePiece(Math.floor(target / SIZE), target % SIZE, pieceIndex);
+              if (validDrop) {
+                ghost.remove();
+                placePiece(targetRow, targetCol, pieceIndex);
+              } else {
+                selected = null;
+                button.classList.remove("selected");
+                button.setAttribute("aria-pressed", "false");
+                const origin = button.getBoundingClientRect();
+                ghost.classList.remove("drop-valid", "drop-invalid");
+                ghost.classList.add("returning");
+                ghost.style.left = `${origin.left + origin.width / 2}px`;
+                ghost.style.top = `${origin.top + origin.height / 2}px`;
+                setTimeout(() => ghost.remove(), 190);
+                if (dragState.hasMoved && event.type !== "pointercancel") playSound("error");
               }
             }
           };
@@ -1641,6 +1886,7 @@
         hovered = null;
         checkAchievements();
         saveProfile();
+        saveGameState();
         render();
         playSound(lines ? (combo > 1 ? "combo" : "line") : "place");
         if (lines) notify(`${lines} linha${lines > 1 ? "s" : ""} limpa${lines > 1 ? "s" : ""} • +${gained}`);
@@ -1658,7 +1904,7 @@
       function rankings() {
         const currentName = (profile.playerName || DEFAULT_PLAYER_NAME).toUpperCase();
         const otherPlayers = worldPlayers.filter((player) => player.name.toUpperCase() !== currentName);
-        return [...otherPlayers, { name: "VOCÊ", country: countryFlag(PLAYER_COUNTRY), score: profile.bestScore, color: "cyan" }]
+        return [...otherPlayers, { name: "VOCÊ", country: countryFlag(profile.country || PLAYER_COUNTRY), avatar: profile.avatar || "😊", score: profile.bestScore, color: "cyan" }]
           .sort((a, b) => b.score - a.score)
           .map((player, index) => ({ ...player, rank: index + 1 }));
       }
@@ -1666,7 +1912,7 @@
       function playerRow(player, full = false) {
         const initials = player.name === "VOCÊ" ? (profile.playerName || DEFAULT_PLAYER_NAME).slice(0, 2) : player.name.slice(0, 2);
         const safeName = escapeHtml(player.name);
-        const safeInitials = escapeHtml(initials);
+        const safeInitials = escapeHtml(player.avatar || initials);
         return `<li class="${player.name === "VOCÊ" ? "user" : ""}"><span class="rank ${player.rank <= 3 ? "podium" : ""}">${String(player.rank).padStart(2,"0")}</span><span class="player-avatar ${player.color}">${safeInitials}</span><span class="player-info"><b>${safeName}</b><small>${player.country} GLOBAL</small></span><strong class="player-score">${player.score.toLocaleString("pt-BR")}</strong></li>`;
       }
 
@@ -1699,13 +1945,14 @@
         $("#menuLevelLabel").textContent = levelText;
         $("#rankLabel").textContent = `#${user.rank} NA TURMA`;
         $("#leaderboard").innerHTML = list.slice(0, 4).map((player) => playerRow(player)).join("");
-        const userInitials = escapeHtml((profile.playerName || DEFAULT_PLAYER_NAME).slice(0, 2));
+        const userInitials = escapeHtml(profile.avatar || (profile.playerName || DEFAULT_PLAYER_NAME).slice(0, 2));
         $("#yourRank").innerHTML = `<span class="rank">${String(user.rank).padStart(2,"0")}</span><span class="player-avatar cyan">${userInitials}</span><span class="player-info"><b>VOCÊ</b><small>🇧🇷 BRASIL</small></span><strong class="player-score">${profile.bestScore.toLocaleString("pt-BR")}</strong>`;
         const percent = Math.round(profile.unlocked.length / achievements.length * 100);
         $("#achievementText").textContent = `${profile.unlocked.length} de ${achievements.length} liberadas`;
         $("#achievementPercent").textContent = `${percent}% concluído`;
         $("#achievementValue").textContent = `${percent}%`;
         $("#coinValue").textContent = profile.coins.toLocaleString("pt-BR");
+        document.querySelector(".profile > .avatar").textContent = profile.avatar || "😊";
         if (document.activeElement !== $("#playerNameInput")) $("#playerNameInput").value = profile.playerName || DEFAULT_PLAYER_NAME;
         document.body.dataset.arenaTheme = profile.activeTheme;
         renderThemeMotion();
@@ -1726,6 +1973,7 @@
         gameStats = { placements: 0, lines: 0, bestCombo: 0, score: 0 };
         blitzRemaining = 120;
         reviveUsed = false;
+        rankingSessionId = "";
         $("#gameOverMessage").textContent = "VOCÊ JOGOU MUITO BEM!";
         $("#gameOverTitle").textContent = "FIM DA RODADA";
         $("#reviveButton").hidden = true;
@@ -1733,6 +1981,8 @@
         $("#playAgain").hidden = false;
         $("#gameOver").classList.remove("show");
         render();
+        saveGameState();
+        void startRankingSession();
         notify("Nova rodada! Divirta-se com os bloquinhos. 🎉");
       }
 
@@ -1784,6 +2034,7 @@
         document.querySelector(".season span").textContent = `${days}d ${String(hours).padStart(2,"0")}h restantes`;
         if (mode === "blitz" && !$("#gameOver").classList.contains("show")) {
           blitzRemaining = Math.max(0, blitzRemaining - 1);
+          if (blitzRemaining % 5 === 0) saveGameState();
           $("#modeClock").textContent = `${Math.floor(blitzRemaining / 60)}:${String(blitzRemaining % 60).padStart(2,"0")}`;
           if (!blitzRemaining) {
             void submitWorldScore();
@@ -1858,9 +2109,36 @@
         saveProfile();
         renderStatus();
         if (changed) {
-          void submitWorldScore();
-          notify(`Nome do ranking atualizado para ${nextName}. 🌟`);
+          notify(`Nome atualizado para ${nextName}. Ele aparecerá na próxima pontuação. 🌟`);
         }
+      }
+
+      function renderTutorial() {
+        const step = tutorialSteps[tutorialStep];
+        $("#tutorialProgress").textContent = `${tutorialStep + 1} de ${tutorialSteps.length}`;
+        $("#tutorialIcon").textContent = step.icon;
+        $("#tutorialTag").textContent = step.tag;
+        $("#tutorialTitle").textContent = step.title;
+        $("#tutorialText").textContent = step.text;
+        $("#tutorialDots").innerHTML = tutorialSteps.map((_, index) => `<i class="${index === tutorialStep ? "active" : ""}"></i>`).join("");
+        $("#tutorialBack").disabled = tutorialStep === 0;
+        $("#tutorialNext").textContent = tutorialStep === tutorialSteps.length - 1 ? "Começar! 🎉" : "Próximo →";
+      }
+
+      function openTutorial() {
+        if ($("#settingsMenu").classList.contains("open")) closeSettings();
+        tutorialStep = 0;
+        renderTutorial();
+        $("#tutorialOverlay").classList.add("show");
+        $("#tutorialOverlay").setAttribute("aria-hidden", "false");
+        $("#tutorialNext").focus();
+      }
+
+      function closeTutorial() {
+        profile.tutorialSeen = true;
+        saveProfile();
+        $("#tutorialOverlay").classList.remove("show");
+        $("#tutorialOverlay").setAttribute("aria-hidden", "true");
       }
 
       function applySettings() {
@@ -1871,6 +2149,8 @@
         $("#musicToggle").checked = profile.musicOn !== false;
         $("#musicVolume").value = String(Math.round(profile.musicVolume * 100));
         $("#effectsToggle").checked = soundOn;
+        $("#countrySelect").value = profile.country || "BR";
+        document.querySelectorAll("[data-avatar]").forEach((button) => button.classList.toggle("active", button.dataset.avatar === (profile.avatar || "😊")));
       }
 
       function openSettings() {
@@ -1908,6 +2188,7 @@
       $("#settingsBackdrop").addEventListener("click", closeSettings);
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape" && $("#settingsMenu").classList.contains("open")) closeSettings();
+        if (event.key === "Escape" && $("#tutorialOverlay").classList.contains("show")) closeTutorial();
       });
       document.querySelectorAll(".theme-choice [data-ui-theme]").forEach((button) => button.addEventListener("click", () => {
         profile.uiTheme = button.dataset.uiTheme;
@@ -1929,6 +2210,39 @@
         saveProfile();
         if (soundOn) playSound("place");
       });
+      $("#openTutorial").addEventListener("click", openTutorial);
+      $("#closeTutorial").addEventListener("click", closeTutorial);
+      $("#tutorialBack").addEventListener("click", () => { if (tutorialStep > 0) { tutorialStep -= 1; renderTutorial(); } });
+      $("#tutorialNext").addEventListener("click", () => {
+        if (tutorialStep < tutorialSteps.length - 1) { tutorialStep += 1; renderTutorial(); }
+        else closeTutorial();
+      });
+      $("#tutorialOverlay").addEventListener("click", (event) => { if (event.target === $("#tutorialOverlay")) closeTutorial(); });
+      document.querySelectorAll("[data-avatar]").forEach((button) => button.addEventListener("click", () => {
+        profile.avatar = button.dataset.avatar;
+        saveProfile();
+        applySettings();
+        renderStatus();
+      }));
+      $("#countrySelect").addEventListener("change", (event) => {
+        profile.country = event.target.value;
+        saveProfile();
+        renderStatus();
+      });
+      window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        $("#installApp").hidden = false;
+      });
+      $("#installApp").addEventListener("click", async () => {
+        if (!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        const result = await deferredInstallPrompt.userChoice;
+        if (result.outcome === "accepted") notify("Bloco Mania instalado! 🎉");
+        deferredInstallPrompt = null;
+        $("#installApp").hidden = true;
+      });
+      window.addEventListener("appinstalled", () => { $("#installApp").hidden = true; });
       $("#modeSelect").addEventListener("change", (event) => {
         mode = event.target.value;
         profile.lastMode = mode;
@@ -1952,6 +2266,7 @@
         else if (profile.musicOn && audioContext) startBackgroundMusic();
       });
 
+      const restoredGame = restoreGameState();
       $("#modeSelect").value = mode;
       $("#modeTitle").textContent = mode === "blitz" ? "BLITZ" : mode === "zen" ? "ZEN" : "CLÁSSICO";
       $("#modeHint").textContent = mode === "zen" ? "BRINQUE SEM PRESSA" : mode === "blitz" ? "CORRIDA CONTRA O TEMPO" : "BRINCADEIRA CLÁSSICA";
@@ -1961,8 +2276,12 @@
       updateTimers();
       setInterval(updateTimers, 1000);
       render();
+      if (restoredGame && !hasAnyMove()) showNoMoves();
+      if (!rankingSessionId) void startRankingSession();
+      if (!profile.tutorialSeen) setTimeout(openTutorial, 450);
       void loadWorldRanking();
       setInterval(loadWorldRanking, 60000);
+      window.addEventListener("beforeunload", saveGameState);
     })();
   </script>
 </body>
