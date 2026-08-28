@@ -896,6 +896,32 @@
       .statusbar .center, .statusbar span:last-child { display: block; }
       .settings-menu { width: 100%; }
     }
+    @media (min-width: 801px) {
+      .topbar { grid-template-columns: minmax(190px, 250px) 1fr auto auto; column-gap: 12px; }
+      .menu-button, .profile { justify-self: end; }
+    }
+    @media (max-width: 800px) {
+      .topbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto auto; gap: 10px; align-items: center; }
+      .brand { grid-column: 1; grid-row: 1; justify-self: start; }
+      .menu-button { grid-column: 2; grid-row: 1; display: block; justify-self: end; }
+      .nav { grid-column: 1 / -1; grid-row: 2; order: initial; width: 100%; height: auto; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; overflow: visible; }
+      .nav button { width: 100%; min-width: 0; min-height: 38px; padding: 0 4px; font-size: 10px; white-space: nowrap; }
+      .profile { grid-column: 1 / -1; grid-row: 3; order: initial; width: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; justify-self: stretch; }
+      .profile .online { display: none; }
+      .profile .coin-pill { display: flex; }
+      .profile .avatar { display: grid; }
+      .profile-copy { width: 100%; display: flex; align-items: stretch; text-align: left; }
+      .profile-copy small { display: block; text-align: left; }
+      .player-name-input { width: 100%; text-align: left; }
+    }
+    @media (max-width: 520px) {
+      .topbar { grid-template-columns: minmax(0, 1fr) auto; }
+      .brand { justify-self: start; }
+      .profile { grid-template-columns: auto minmax(0, 1fr) auto; }
+      .nav { justify-content: stretch; }
+      .nav button { padding: 0 2px; font-size: 9px; }
+      .profile .coin-pill { min-width: 68px; }
+    }
     @media (prefers-reduced-motion: reduce) {
       .theme-motion, .theme-motion span, .theme-preview, .theme-preview span { animation: none !important; }
     }
@@ -913,8 +939,8 @@
       <button data-view="achievements">Conquistas</button>
       <button data-view="shop">Loja</button>
     </nav>
+    <button class="sound menu-button" id="menuButton" title="Abrir menu" aria-label="Abrir menu">☰</button>
     <div class="profile">
-      <button class="sound menu-button" id="menuButton" title="Abrir menu" aria-label="Abrir menu">☰</button>
       <span class="coin-pill" title="Créditos da Arena">◈ <b id="coinValue">650</b></span>
       <i class="online"></i>
       <label class="profile-copy"><small id="levelLabel">NÍVEL 12</small><input class="player-name-input" id="playerNameInput" maxlength="20" value="FLAVIO" aria-label="Seu nome no ranking mundial" title="Seu nome no ranking mundial"></label>
