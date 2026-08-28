@@ -1,0 +1,1557 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Bloco Mania: um jogo alegre de encaixar bloquinhos coloridos.">
+  <title>Bloco Mania</title>
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: #0c1117;
+      --panel-2: #111821;
+      --line: #25303c;
+      --muted: #718094;
+      --text: #f4f7fb;
+      --lime: #b7f52a;
+      --cyan: #18d9e8;
+      --violet: #8e63ff;
+      --orange: #ff8a3d;
+      --danger: #ff405c;
+    }
+
+    * { box-sizing: border-box; }
+    html { color-scheme: dark; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button { font: inherit; }
+    button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+    .mono { font-family: "Courier New", ui-monospace, monospace; }
+
+    .topbar {
+      height: 76px;
+      display: grid;
+      grid-template-columns: 250px 1fr 250px;
+      align-items: center;
+      padding: 0 28px;
+      border-bottom: 1px solid var(--line);
+      background: #07090d;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: var(--text);
+      font-size: 19px;
+      font-weight: 950;
+      letter-spacing: -.8px;
+      cursor: pointer;
+    }
+    .brand em { color: var(--lime); font-style: normal; }
+    .brand-mark {
+      width: 31px;
+      height: 31px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+      transform: rotate(-6deg);
+    }
+    .brand-mark i { background: var(--lime); box-shadow: 0 0 12px rgba(183,245,42,.3); }
+    .brand-mark i:nth-child(2) { background: var(--cyan); }
+    .brand-mark i:nth-child(3) { background: var(--violet); }
+    .nav { height: 100%; display: flex; justify-content: center; gap: 34px; }
+    .nav button {
+      position: relative;
+      border: 0;
+      padding: 0 2px;
+      background: transparent;
+      color: #7c8999;
+      font: 800 10px "Courier New", monospace;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .nav button.active { color: var(--text); }
+    .nav button.active::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: var(--lime); }
+    .profile { justify-self: end; display: flex; align-items: center; gap: 10px; }
+    .sound {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .online { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 9px var(--lime); }
+    .profile-copy { text-align: right; line-height: 1.1; }
+    .profile-copy small { display: block; color: var(--lime); font: 700 8px "Courier New", monospace; }
+    .profile-copy b { font: 900 10px "Courier New", monospace; }
+    .avatar, .player-avatar { display: grid; place-items: center; color: #0b0e12; font: 900 9px "Courier New", monospace; }
+    .avatar { width: 37px; height: 37px; border: 1px solid #3b4857; background: var(--cyan); }
+
+    .layout {
+      min-height: calc(100vh - 114px);
+      max-width: 1420px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 225px minmax(500px, 690px);
+      justify-content: center;
+      gap: 38px;
+      padding: 28px 28px 20px;
+    }
+    .left { padding-top: 13px; }
+    .right { display: none; }
+    .eyebrow { color: #718094; font: 700 8px "Courier New", monospace; letter-spacing: 1.1px; }
+    .rail-title { display: flex; justify-content: space-between; margin-bottom: 12px; }
+    .rail-title b { color: #465363; }
+
+    .mission {
+      position: relative;
+      padding: 19px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+    .mission::before { content: ""; position: absolute; top: 0; left: 0; width: 42px; height: 2px; background: var(--lime); }
+    .mission-icon { width: 38px; height: 38px; display: grid; place-items: center; margin-bottom: 17px; border: 1px solid #455724; color: var(--lime); background: #141a0e; }
+    .mission > small, .league small { color: var(--lime); font: 700 8px "Courier New", monospace; letter-spacing: 1px; }
+    .mission h2 { margin: 7px 0 19px; font-size: 15px; line-height: 1.35; }
+    .progress-label { display: flex; justify-content: space-between; color: var(--muted); font-size: 9px; }
+    .progress-label b { color: var(--text); }
+    .track { height: 4px; margin: 8px 0 16px; background: #252e38; }
+    .track i { display: block; height: 100%; width: 0; background: var(--lime); box-shadow: 0 0 10px rgba(183,245,42,.4); }
+    .reward { display: flex; justify-content: space-between; padding-top: 13px; border-top: 1px solid var(--line); color: #687587; font: 700 8px "Courier New", monospace; }
+    .reward b { color: var(--lime); }
+    .streak {
+      width: 100%;
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 35px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 13px;
+      border: 1px solid #3a2b20;
+      background: #100e0c;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+    }
+    .streak > b { color: var(--orange); font-size: 21px; }
+    .streak span { display: flex; flex-direction: column; }
+    .streak small { color: #796c61; font: 700 8px "Courier New", monospace; }
+    .streak strong { color: #ffb176; font: 900 11px "Courier New", monospace; }
+    .season { margin-top: 17px; min-height: 122px; padding: 17px; border-left: 2px solid var(--violet); background: #0d0c16; }
+    .season small { color: var(--violet); font: 700 8px "Courier New", monospace; }
+    .season strong { display: block; margin: 10px 0; font-size: 20px; font-style: italic; line-height: .9; }
+    .season span { color: #687587; font: 700 8px "Courier New", monospace; }
+
+    .arena { padding-top: 12px; }
+    .arena-head { display: flex; justify-content: space-between; align-items: end; margin-bottom: 11px; }
+    .arena-head small, .score small { display: block; color: #687587; font: 700 8px "Courier New", monospace; letter-spacing: 1px; }
+    .arena-head h1 { margin: 4px 0 0; font: 950 20px "Courier New", monospace; letter-spacing: -1px; }
+    .arena-head h1 span { color: var(--cyan); font-size: 12px; }
+    .scores { display: flex; align-items: end; gap: 24px; text-align: right; }
+    .score b { font: 900 14px "Courier New", monospace; }
+    .score.live b { color: var(--lime); font-size: 22px; }
+    .restart { width: 34px; height: 34px; border: 1px solid #394654; background: var(--panel); color: #7c8999; font-size: 18px; cursor: pointer; }
+    .mode-controls { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+    .mode-select { border: 1px solid var(--line); padding: 7px 9px; background: #0b1118; color: var(--cyan); font: 800 9px "Courier New", monospace; }
+    .map-select { min-width: 155px; color: var(--lime); }
+    .map-strip { width: min(100%, 520px); margin: 0 auto 9px; display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #728092; font: 700 8px "Courier New", monospace; }
+    .map-strip b { color: var(--lime); letter-spacing: .7px; }
+    .map-strip span:last-child { color: #526170; text-align: right; }
+    .combo { height: 30px; display: flex; align-items: center; gap: 11px; margin-bottom: 9px; padding: 0 12px; border-left: 2px solid var(--cyan); background: #0b1519; color: #758494; font: 700 8px "Courier New", monospace; }
+    .combo b { color: var(--cyan); font-size: 12px; }
+    .combo i { margin-left: auto; color: #547078; font-style: normal; }
+    .board-wrap { position: relative; width: min(100%, 520px); margin: auto; padding: 11px; border: 1px solid #2a3642; background: radial-gradient(circle at 50% 20%, #13212d, #080c11 70%); background-position: center; background-size: cover; box-shadow: 0 24px 65px rgba(0,0,0,.55); overflow: hidden; transition: border-color .25s ease, box-shadow .25s ease; }
+    .board-wrap::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(145deg, rgba(24,217,232,.08), transparent 38%, rgba(183,245,42,.05)); }
+    .board { position: relative; z-index: 1; aspect-ratio: 1; display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; padding: 5px; background: rgba(4,8,13,.72); backdrop-filter: blur(1.5px); }
+    .cell { min-width: 0; border: 1px solid rgba(91,121,145,.24); padding: 0; background: rgba(10,18,25,.72); cursor: crosshair; touch-action: manipulation; }
+    body[data-arena-theme="neon-district"] .board-wrap { background-image: linear-gradient(rgba(3,9,15,.30), rgba(3,9,15,.48)), url("assets/arena-neon-district.png"); border-color: #1b7093; box-shadow: 0 24px 70px rgba(0,126,180,.20); }
+    body[data-arena-theme="plasma-rift"] .board-wrap { background-image: linear-gradient(rgba(7,2,17,.28), rgba(7,2,17,.52)), url("assets/arena-plasma-rift.png"); border-color: #6441a0; box-shadow: 0 24px 70px rgba(125,58,220,.22); }
+    body[data-arena-theme="digital-zen"] .board-wrap { background-image: linear-gradient(rgba(2,12,15,.22), rgba(2,12,15,.46)), url("assets/arena-digital-zen.png"); border-color: #26767d; box-shadow: 0 24px 70px rgba(22,171,180,.18); }
+    .cell:hover { border-color: #445366; }
+    .cell.filled { border-color: rgba(255,255,255,.15); box-shadow: inset -5px -5px 0 rgba(0,0,0,.2); }
+    .lime { background: var(--lime) !important; }
+    .cyan { background: var(--cyan) !important; }
+    .violet { background: var(--violet) !important; }
+    .orange { background: var(--orange) !important; }
+    .cell.preview { opacity: .7; border-color: rgba(255,255,255,.55); }
+    .cell.invalid { background: var(--danger) !important; }
+    .corner { position: absolute; width: 13px; height: 13px; border-color: var(--cyan); }
+    .corner.tl { top: -4px; left: -4px; border-top: 2px solid; border-left: 2px solid; }
+    .corner.tr { top: -4px; right: -4px; border-top: 2px solid; border-right: 2px solid; }
+    .corner.bl { bottom: -4px; left: -4px; border-bottom: 2px solid; border-left: 2px solid; }
+    .corner.br { bottom: -4px; right: -4px; border-bottom: 2px solid; border-right: 2px solid; }
+    .tray { width: min(100%, 520px); display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin: 11px auto 0; }
+    .piece { min-height: 80px; display: flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid var(--line); background: var(--panel); color: #687587; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+    .piece:hover { border-color: #465567; }
+    .piece.selected { border-color: var(--cyan); color: var(--text); background: #0b171c; }
+    .piece.dragging { opacity: .45; cursor: grabbing; }
+    .cell.clearing { animation: clear-cell .32s ease both; }
+    @keyframes clear-cell { 50% { transform: scale(1.18); background: #fff; box-shadow: 0 0 25px var(--cyan); } 100% { transform: scale(.15); opacity: 0; } }
+    .drag-ghost { position: fixed; z-index: 9999; width: 88px; height: 88px; display: grid; place-items: center; pointer-events: none; transform: translate(-50%,-68%); border: 1px solid var(--cyan); background: rgba(8,14,20,.9); box-shadow: 0 10px 35px rgba(0,0,0,.45); }
+    .piece.used { color: #3f4a57; cursor: default; font: 700 8px "Courier New", monospace; }
+    .mini-grid { width: 65px; height: 50px; display: grid; grid-template-columns: repeat(4, 14px); grid-template-rows: repeat(3, 14px); gap: 3px; }
+    .mini-grid i { display: block; }
+    .piece small { font: 700 8px "Courier New", monospace; text-transform: uppercase; }
+    .hint { text-align: center; color: #596778; font: 700 8px "Courier New", monospace; letter-spacing: 1px; }
+    .hint span { color: var(--cyan); }
+
+    .ranking-head { display: flex; justify-content: space-between; align-items: center; }
+    .ranking-head h2 { margin: 4px 0 0; font: 950 18px "Courier New", monospace; }
+    .icon-button { width: 34px; height: 34px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); cursor: pointer; }
+    .league { margin-top: 15px; display: flex; gap: 12px; align-items: center; padding: 13px; border: 1px solid #362d59; background: #100e1a; }
+    .league-badge { width: 43px; height: 43px; display: grid; place-items: center; border: 1px solid #58458c; background: #181229; color: #baa8f0; }
+    .league div { display: flex; flex-direction: column; }
+    .league small { color: #9f8ae3; }
+    .league strong { font: 900 12px "Courier New", monospace; }
+    .league span { color: #796f92; font: 700 7px "Courier New", monospace; }
+    .leaderboard { list-style: none; margin: 12px 0; padding: 0; border: 1px solid var(--line); }
+    .leaderboard li, .your-rank { min-height: 55px; display: grid; grid-template-columns: 28px 33px 1fr auto; align-items: center; gap: 9px; padding: 8px 10px; border-bottom: 1px solid var(--line); background: #0b0f14; }
+    .leaderboard li:last-child { border-bottom: 0; }
+    .rank { color: #596778; font: 900 9px "Courier New", monospace; }
+    .rank.podium { color: var(--lime); }
+    .player-avatar { width: 31px; height: 31px; }
+    .player-info { display: flex; flex-direction: column; }
+    .player-info b { font: 900 9px "Courier New", monospace; }
+    .player-info small { color: #5d6a7c; font: 700 7px "Courier New", monospace; }
+    .player-score { font: 900 9px "Courier New", monospace; }
+    .your-rank { border: 1px solid #31505a; background: #0b171c; color: var(--cyan); }
+    .wide-button { width: 100%; height: 36px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; border: 1px solid var(--line); background: var(--panel); color: #8592a2; font: 700 8px "Courier New", monospace; cursor: pointer; }
+    .achievement-tease { width: 100%; margin-top: 17px; display: grid; grid-template-columns: 37px 1fr auto; align-items: center; gap: 10px; padding: 14px 0 0; border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+    .achievement-tease > b { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid #4c3e17; background: #19150a; color: #f2c84f; }
+    .achievement-tease span { display: flex; flex-direction: column; }
+    .achievement-tease small { color: #687587; font: 700 7px "Courier New", monospace; }
+    .achievement-tease span b { font-size: 9px; }
+    .achievement-tease span i { color: #637084; font: 700 7px "Courier New", monospace; }
+    .achievement-tease > strong { color: #f2c84f; font: 900 9px "Courier New", monospace; }
+
+    .statusbar { height: 38px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; border-top: 1px solid var(--line); color: #536071; font: 700 8px "Courier New", monospace; }
+    .statusbar b { color: #8491a1; }
+
+    .game-over { position: absolute; inset: 11px; z-index: 5; display: none; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #3b4857; background: rgba(7,9,13,.95); text-align: center; }
+    .game-over.show { display: flex; }
+    .game-over small { color: var(--muted); font: 700 8px "Courier New", monospace; }
+    .game-over h2 { margin: 7px 0 2px; font: 950 28px "Courier New", monospace; }
+    .game-over strong { color: var(--lime); font: 950 19px "Courier New", monospace; }
+    .game-over button { width: 210px; height: 42px; display: flex; justify-content: space-between; align-items: center; margin-top: 22px; padding: 0 14px; border: 0; background: var(--lime); color: #12170a; font: 900 9px "Courier New", monospace; cursor: pointer; }
+
+    dialog { width: min(920px, calc(100% - 32px)); max-height: calc(100vh - 80px); padding: 0; overflow: auto; border: 1px solid #2b3744; background: #0a0e14; color: var(--text); box-shadow: 0 28px 100px rgba(0,0,0,.75); }
+    dialog::backdrop { background: rgba(3,5,8,.82); backdrop-filter: blur(6px); }
+    .modal-head { position: sticky; top: 0; z-index: 3; min-height: 82px; display: flex; align-items: center; justify-content: space-between; padding: 19px 23px; border-bottom: 1px solid var(--line); background: #0a0e14; }
+    .modal-head small { color: var(--lime); font: 700 8px "Courier New", monospace; }
+    .modal-head h2 { margin: 4px 0 0; font: 950 21px "Courier New", monospace; }
+    .modal-head button { width: 35px; height: 35px; border: 1px solid var(--line); background: var(--panel-2); color: var(--muted); font-size: 20px; cursor: pointer; }
+    .modal-body { padding: 19px; }
+    .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; }
+    .challenge-card { min-height: 184px; padding: 17px; border: 1px solid var(--line); background: var(--panel); }
+    .challenge-card.complete { border-color: #465a24; background: #10160c; }
+    .challenge-card > b { width: 35px; height: 35px; display: grid; place-items: center; margin-bottom: 15px; border: 1px solid #384656; background: var(--panel-2); color: var(--cyan); }
+    .challenge-card small { color: #6e7b8d; font: 700 8px "Courier New", monospace; }
+    .challenge-card h3 { margin: 5px 0 2px; font-size: 13px; }
+    .challenge-card p { margin: 0 0 15px; color: #687587; font-size: 9px; }
+    .challenge-card footer { display: flex; justify-content: space-between; margin-top: 8px; color: #788596; font: 700 8px "Courier New", monospace; }
+    .challenge-card footer strong { color: var(--lime); }
+    .achievement-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .achievement-card { min-height: 92px; display: grid; grid-template-columns: 46px 1fr 25px; gap: 13px; align-items: center; padding: 14px; border: 1px solid var(--line); background: var(--panel); opacity: .55; }
+    .achievement-card.unlocked { opacity: 1; border-color: #405322; background: #0f150d; }
+    .achievement-card > b { width: 45px; height: 45px; display: grid; place-items: center; border: 1px solid #354250; background: var(--panel-2); color: #768497; }
+    .achievement-card.unlocked > b { border-color: #4d6225; color: var(--lime); background: #161e0d; }
+    .achievement-card small { color: var(--lime); font: 700 7px "Courier New", monospace; }
+    .achievement-card h3 { margin: 4px 0 2px; font-size: 12px; }
+    .achievement-card p { margin: 0; color: #687587; font-size: 9px; }
+    .ranking-summary { display: grid; grid-template-columns: repeat(3, 1fr); margin-bottom: 12px; border: 1px solid var(--line); }
+    .ranking-summary div { min-height: 86px; display: flex; flex-direction: column; justify-content: center; padding: 14px 18px; border-right: 1px solid var(--line); }
+    .ranking-summary div:last-child { border-right: 0; }
+    .ranking-summary small { color: var(--muted); font: 700 7px "Courier New", monospace; }
+    .ranking-summary strong { color: var(--lime); font: 950 20px "Courier New", monospace; }
+    .full-ranking { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); }
+    .full-ranking li { min-height: 54px; display: grid; grid-template-columns: 33px 34px 1fr auto; align-items: center; gap: 11px; padding: 8px 13px; border-bottom: 1px solid var(--line); background: var(--panel); }
+    .full-ranking li:last-child { border-bottom: 0; }
+    .full-ranking li.user { border-left: 2px solid var(--cyan); background: #0a171c; }
+    .ranking-note { color: #5e6b7c; text-align: center; font: 700 8px "Courier New", monospace; }
+
+    .coin-pill { min-width: 72px; height: 32px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid #4d431a; background: #151307; color: #f5ce54; font: 900 9px "Courier New", monospace; }
+    .rank-float { position: fixed; right: 22px; bottom: 56px; z-index: 40; min-width: 150px; height: 44px; display: flex; align-items: center; justify-content: center; gap: 9px; border: 1px solid #684fd0; background: linear-gradient(135deg, #17112d, #0e1724); color: #e8e1ff; box-shadow: 0 13px 38px rgba(0,0,0,.45), 0 0 24px rgba(142,99,255,.18); font: 900 9px "Courier New", monospace; letter-spacing: .7px; cursor: pointer; }
+    .rank-float b { color: #bdaeff; font-size: 17px; }
+    .rank-float:hover { border-color: #a58cff; transform: translateY(-1px); }
+    .shop-intro { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; padding: 14px 16px; border: 1px solid #3e3516; background: linear-gradient(110deg, #151307, #0d1118); }
+    .shop-intro p { margin: 4px 0 0; color: #748294; font-size: 10px; }
+    .shop-balance { color: #f5ce54; font: 950 18px "Courier New", monospace; white-space: nowrap; }
+    .shop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 13px; }
+    .theme-card { overflow: hidden; border: 1px solid var(--line); background: var(--panel); }
+    .theme-preview { position: relative; aspect-ratio: 16 / 8.5; background: radial-gradient(circle at 40% 20%, #203040, #070a0f 70%); background-position: center; background-size: cover; }
+    .theme-preview::after { content: ""; position: absolute; inset: 13%; border: 1px solid rgba(255,255,255,.24); background-image: linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px); background-size: 10% 10%; box-shadow: inset 0 0 28px rgba(0,0,0,.48); }
+    .theme-preview.neon-district { background-image: linear-gradient(rgba(2,8,14,.18),rgba(2,8,14,.35)), url("assets/arena-neon-district.png"); }
+    .theme-preview.plasma-rift { background-image: linear-gradient(rgba(7,2,17,.12),rgba(7,2,17,.34)), url("assets/arena-plasma-rift.png"); }
+    .theme-preview.digital-zen { background-image: linear-gradient(rgba(2,12,15,.10),rgba(2,12,15,.32)), url("assets/arena-digital-zen.png"); }
+    .theme-card footer { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 12px; }
+    .theme-card h3 { margin: 0 0 4px; font-size: 12px; }
+    .theme-card p { margin: 0; color: #687587; font-size: 9px; }
+    .theme-card button { min-width: 92px; height: 34px; border: 1px solid #465462; background: #111821; color: #d7e1eb; font: 900 8px "Courier New", monospace; cursor: pointer; }
+    .theme-card button.buy { border-color: #665717; color: #f5ce54; background: #171407; }
+    .theme-card button.active { border-color: #5d772a; color: #dff68d; background: #151d0c; }
+    .theme-card button:disabled { cursor: default; opacity: .8; }
+    .toast { position: fixed; left: 50%; bottom: 53px; z-index: 100; min-width: 290px; display: none; align-items: center; justify-content: center; gap: 9px; transform: translateX(-50%); padding: 12px 17px; border: 1px solid #4b6025; background: #12180d; color: #e6f7bd; box-shadow: 0 15px 40px rgba(0,0,0,.55); font: 800 9px "Courier New", monospace; }
+    .toast.show { display: flex; }
+    .toast b { color: var(--lime); }
+
+    @media (max-width: 1080px) {
+      .layout { grid-template-columns: minmax(470px, 690px); }
+      .left { display: none; }
+      .topbar { grid-template-columns: 220px 1fr 200px; }
+      .nav { gap: 18px; }
+    }
+    @media (max-width: 800px) {
+      .topbar { height: auto; grid-template-columns: 1fr auto; padding: 13px 16px; }
+      .nav { order: 3; grid-column: 1 / -1; height: 42px; justify-content: flex-start; gap: 24px; overflow-x: auto; }
+      .profile-copy, .online { display: none; }
+      .layout { grid-template-columns: 1fr; min-height: auto; padding: 18px 14px 28px; }
+      .right { width: min(100%, 520px); margin: auto; }
+      .statusbar .center { display: none; }
+      .card-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 520px) {
+      .brand { font-size: 16px; }
+      .brand-mark { width: 27px; height: 27px; }
+      .sound { display: none; }
+      .nav button { font-size: 9px; }
+      .layout { padding: 12px 9px 24px; }
+      .scores .best { display: none; }
+      .score.live b { font-size: 18px; }
+      .board-wrap { padding: 7px; }
+      .board { gap: 3px; padding: 3px; }
+      .piece { min-height: 67px; }
+      .piece small { display: none; }
+      .statusbar { padding: 0 11px; }
+      .statusbar span:last-child { display: none; }
+      .card-grid, .achievement-grid, .shop-grid { grid-template-columns: 1fr; }
+      .rank-float { right: 12px; bottom: 49px; min-width: 44px; width: 44px; padding: 0; }
+      .rank-float span { display: none; }
+      .map-strip { align-items: flex-start; flex-direction: column; gap: 3px; }
+      .map-strip span:last-child { text-align: left; }
+      .ranking-summary { grid-template-columns: 1fr; }
+      .ranking-summary div { min-height: 65px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .ranking-summary div:last-child { border-bottom: 0; }
+      .toast { width: calc(100% - 20px); min-width: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+  </style>
+  <style>
+    /* Tema infantil — Bloco Mania */
+    :root {
+      --bg: #eefaff;
+      --panel: #ffffff;
+      --panel-2: #f6f0ff;
+      --line: #d9d0f2;
+      --muted: #756a8f;
+      --text: #45365f;
+      --lime: #78d96b;
+      --cyan: #35c9dc;
+      --violet: #9c75e8;
+      --orange: #ff9f55;
+      --danger: #ff6f91;
+      --pink: #ff72ad;
+      --yellow: #ffd85a;
+      --ink: #45365f;
+      --soft-shadow: 0 8px 0 rgba(108, 84, 158, .10), 0 15px 32px rgba(100, 77, 149, .10);
+    }
+
+    html { color-scheme: light; }
+    body {
+      background:
+        radial-gradient(circle at 8% 12%, rgba(255,216,90,.30) 0 72px, transparent 73px),
+        radial-gradient(circle at 92% 18%, rgba(255,114,173,.18) 0 105px, transparent 106px),
+        radial-gradient(circle at 84% 88%, rgba(53,201,220,.16) 0 125px, transparent 126px),
+        linear-gradient(145deg, #eefaff 0%, #fff8ec 48%, #f7f0ff 100%);
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Arial Rounded MT Bold", system-ui, sans-serif;
+    }
+    body::before,
+    body::after {
+      position: fixed;
+      z-index: -1;
+      font-size: 30px;
+      opacity: .5;
+      pointer-events: none;
+    }
+    body::before { content: "★  ●  ✦"; top: 104px; left: 4%; color: var(--yellow); transform: rotate(-8deg); }
+    body::after { content: "●  ★  ●"; right: 3%; bottom: 72px; color: #bba3ef; transform: rotate(8deg); }
+    button, select { font-family: inherit; }
+    button { transition: transform .16s ease, box-shadow .16s ease, background .16s ease; }
+    button:hover { transform: translateY(-2px); }
+    button:active { transform: translateY(1px) scale(.98); }
+    button:focus-visible, select:focus-visible { outline: 4px solid rgba(53,201,220,.3); outline-offset: 3px; }
+    .mono { font-family: "Trebuchet MS", system-ui, sans-serif; }
+
+    .topbar {
+      height: 86px;
+      margin: 14px auto 0;
+      width: min(1380px, calc(100% - 28px));
+      padding: 0 24px;
+      border: 2px solid rgba(156,117,232,.25);
+      border-radius: 26px;
+      background: rgba(255,255,255,.88);
+      box-shadow: var(--soft-shadow);
+      backdrop-filter: blur(12px);
+    }
+    .brand { color: var(--ink); font-size: 20px; letter-spacing: -.5px; }
+    .brand em { color: var(--pink); }
+    .brand-mark { width: 40px; height: 40px; gap: 4px; transform: rotate(-5deg); }
+    .brand-mark i { border: 2px solid rgba(69,54,95,.12); border-radius: 8px; background: var(--yellow); box-shadow: inset 0 4px 0 rgba(255,255,255,.55); }
+    .brand-mark i:nth-child(2) { background: var(--pink); }
+    .brand-mark i:nth-child(3) { background: var(--cyan); }
+    .brand-mark i:nth-child(4) { background: var(--violet); }
+    .nav { height: auto; gap: 9px; }
+    .nav button {
+      min-height: 40px;
+      padding: 0 15px;
+      border: 2px solid transparent;
+      border-radius: 999px;
+      color: #766c8d;
+      font: 900 12px "Trebuchet MS", sans-serif;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+    .nav button.active { border-color: #e5d7ff; background: #f3ebff; color: #744bc3; box-shadow: inset 0 -3px 0 rgba(116,75,195,.10); }
+    .nav button.active::after { display: none; }
+    .profile { gap: 9px; }
+    .sound, .restart, .icon-button, .modal-head button {
+      border: 2px solid #e3d8f5;
+      border-radius: 13px;
+      background: #fff;
+      color: #705c94;
+      box-shadow: 0 4px 0 #e9e0f7;
+    }
+    .sound { width: 40px; height: 40px; }
+    .online { width: 10px; height: 10px; background: #65d36e; box-shadow: 0 0 0 4px #dff8e2; }
+    .profile-copy small { color: #7a58c6; font: 900 9px "Trebuchet MS", sans-serif; }
+    .profile-copy b { color: var(--ink); font: 900 11px "Trebuchet MS", sans-serif; }
+    .avatar, .player-avatar { border-radius: 12px; color: #fff; font-family: "Trebuchet MS", sans-serif; box-shadow: inset 0 -4px 0 rgba(69,54,95,.12); }
+    .avatar { width: 42px; height: 42px; border: 3px solid #fff; background: linear-gradient(145deg, #54d6e6, #8c74e8); box-shadow: 0 0 0 2px #ded3f2, inset 0 -4px 0 rgba(69,54,95,.12); }
+    .coin-pill { min-width: 80px; height: 38px; border: 2px solid #f2d369; border-radius: 999px; background: #fff7cd; color: #a66c13; font: 900 11px "Trebuchet MS", sans-serif; box-shadow: 0 4px 0 #f1d98e; }
+
+    .layout { min-height: calc(100vh - 150px); gap: 34px; padding-top: 32px; }
+    .left { padding-top: 8px; }
+    .eyebrow, .rail-title { color: #8d7ca7; font: 900 10px "Trebuchet MS", sans-serif; letter-spacing: .4px; }
+    .rail-title b { color: #b08ae5; }
+    .mission, .streak, .season, .league, .leaderboard, .your-rank, .wide-button, .achievement-tease {
+      border: 2px solid #e2d7f3;
+      border-radius: 22px;
+      background: rgba(255,255,255,.92);
+      box-shadow: var(--soft-shadow);
+    }
+    .mission { padding: 20px; }
+    .mission::before { width: 75px; height: 7px; left: 20px; border-radius: 0 0 8px 8px; background: linear-gradient(90deg, var(--pink), var(--yellow)); }
+    .mission-icon { width: 50px; height: 50px; margin-bottom: 15px; border: 0; border-radius: 16px; background: #fff2ad; color: #d89118; font-size: 25px; box-shadow: inset 0 -5px 0 rgba(224,170,35,.12); }
+    .mission > small, .league small { color: #9b67d8; font: 900 10px "Trebuchet MS", sans-serif; }
+    .mission h2 { margin: 8px 0 20px; color: var(--ink); font-size: 17px; line-height: 1.35; }
+    .progress-label { color: #8d82a1; font-size: 11px; }
+    .track { height: 10px; margin: 9px 0 17px; overflow: hidden; border-radius: 999px; background: #eee8f7; }
+    .track i { border-radius: inherit; background: linear-gradient(90deg, #77db76, #35c9dc); box-shadow: none; }
+    .reward { border-color: #eee8f6; color: #8c819d; font: 900 9px "Trebuchet MS", sans-serif; }
+    .reward b { color: #7a55c8; }
+    .streak { margin-top: 16px; padding: 14px; border-color: #ffd5b9; background: #fff8ed; color: var(--ink); }
+    .streak > b { color: #ff8c43; font-size: 24px; }
+    .streak small { color: #a17d69; font: 900 9px "Trebuchet MS", sans-serif; }
+    .streak strong { color: #e56e2b; font: 900 12px "Trebuchet MS", sans-serif; }
+    .season { min-height: 124px; padding: 20px; border-color: #d8c8fa; background: linear-gradient(145deg, #f8f2ff, #fff); }
+    .season small { color: #9567d5; font: 900 9px "Trebuchet MS", sans-serif; }
+    .season strong { margin: 10px 0; color: #7049bb; font-size: 22px; font-style: normal; line-height: 1; }
+    .season span { color: #8b7c9f; font: 800 10px "Trebuchet MS", sans-serif; }
+
+    .arena { padding: 0; }
+    .arena-head { align-items: center; margin-bottom: 14px; padding: 15px 18px; border: 2px solid #e2d7f3; border-radius: 22px; background: rgba(255,255,255,.92); box-shadow: var(--soft-shadow); }
+    .arena-head small, .score small { color: #8b809c; font: 900 9px "Trebuchet MS", sans-serif; letter-spacing: .4px; }
+    .arena-head h1 { margin-top: 5px; color: var(--ink); font: 950 23px "Trebuchet MS", sans-serif; letter-spacing: -.4px; }
+    .arena-head h1 span:first-child { color: #7851c8; font-size: 23px; }
+    .arena-head h1 span:last-child { color: #e0689d; font-size: 13px; }
+    .score b { color: #6e6087; font: 900 15px "Trebuchet MS", sans-serif; }
+    .score.live b { color: #e05d98; font-size: 23px; }
+    .restart { width: 40px; height: 40px; font-size: 21px; }
+    .mode-controls { gap: 8px; margin-top: 10px; }
+    .mode-select { border: 2px solid #dcd0ef; border-radius: 11px; padding: 8px 28px 8px 10px; background: #faf7ff; color: #7651be; font: 900 10px "Trebuchet MS", sans-serif; }
+    .map-select { color: #3b9b87; }
+    .combo { height: 40px; margin-bottom: 10px; padding: 0 16px; border: 2px solid #bdeaf0; border-radius: 15px; background: #effcfe; color: #6b7d8c; font: 900 9px "Trebuchet MS", sans-serif; }
+    .combo::before { content: "✨"; font-size: 16px; }
+    .combo b { color: #1baabb; font-size: 14px; }
+    .combo i { color: #71949a; }
+    .map-strip { padding: 0 8px; color: #8a809c; font: 800 9px "Trebuchet MS", sans-serif; }
+    .map-strip b { color: #7a55c8; }
+
+    .board-wrap {
+      padding: 16px;
+      border: 4px solid #fff;
+      border-radius: 30px;
+      background: linear-gradient(145deg, #cfc0f6, #a892e7);
+      box-shadow: 0 9px 0 #7e67bf, 0 22px 45px rgba(101,77,156,.20);
+      overflow: visible;
+    }
+    .board-wrap::before { inset: 8px; border-radius: 22px; background: radial-gradient(circle at 20% 15%, rgba(255,255,255,.28), transparent 38%); }
+    body[data-arena-theme="neon-district"] .board-wrap,
+    body[data-arena-theme="plasma-rift"] .board-wrap,
+    body[data-arena-theme="digital-zen"] .board-wrap { background-image: linear-gradient(145deg, #cfc0f6, #a892e7); border-color: #fff; box-shadow: 0 9px 0 #7e67bf, 0 22px 45px rgba(101,77,156,.20); }
+    .board { gap: 6px; padding: 8px; border-radius: 22px; background: rgba(255,255,255,.30); backdrop-filter: none; }
+    .cell { border: 2px solid rgba(255,255,255,.40); border-radius: 8px; background: rgba(255,255,255,.28); cursor: pointer; box-shadow: inset 0 2px 0 rgba(255,255,255,.20); }
+    .cell:hover { border-color: #fff; background: rgba(255,255,255,.43); }
+    .cell.filled { border: 2px solid rgba(255,255,255,.85); border-radius: 9px; box-shadow: inset 0 5px 0 rgba(255,255,255,.36), inset 0 -5px 0 rgba(69,54,95,.13), 0 3px 0 rgba(69,54,95,.10); }
+    .lime { background: #78d96b !important; }
+    .cyan { background: #35c9dc !important; }
+    .violet { background: #9c75e8 !important; }
+    .orange { background: #ff9f55 !important; }
+    .cell.preview { opacity: .82; border-color: #fff; transform: scale(.95); }
+    .cell.invalid { background: #ff7b9c !important; }
+    .corner { display: none; }
+    .tray { gap: 12px; margin-top: 21px; }
+    .piece { min-height: 92px; border: 2px solid #e1d6f2; border-radius: 20px; background: rgba(255,255,255,.95); color: #857a99; box-shadow: 0 6px 0 #e2d8f0, 0 12px 24px rgba(100,77,149,.08); }
+    .piece:hover { border-color: #bca5e8; box-shadow: 0 8px 0 #d8c8ed, 0 15px 26px rgba(100,77,149,.12); }
+    .piece.selected { border-color: #65d2df; color: var(--ink); background: #effdff; box-shadow: 0 7px 0 #bfe9ee, 0 0 0 5px rgba(53,201,220,.12); }
+    .piece.used { color: #a79db8; background: #f5f1fa; font: 800 9px "Trebuchet MS", sans-serif; }
+    .mini-grid i { border-radius: 4px; box-shadow: inset 0 3px 0 rgba(255,255,255,.35), inset 0 -3px 0 rgba(69,54,95,.12); }
+    .piece small { font: 900 9px "Trebuchet MS", sans-serif; }
+    .hint { color: #7d728f; font: 900 10px "Trebuchet MS", sans-serif; letter-spacing: .2px; }
+    .hint span { color: #e15c99; font-size: 15px; }
+    .drag-ghost { border: 3px solid #fff; border-radius: 22px; background: rgba(255,255,255,.94); box-shadow: 0 10px 30px rgba(89,68,135,.25); }
+
+    .rank-float { right: 24px; bottom: 58px; height: 48px; border: 2px solid #d6c5f5; border-radius: 999px; background: linear-gradient(135deg, #9c75e8, #7b58c7); color: #fff; box-shadow: 0 6px 0 #6945ae, 0 14px 30px rgba(88,58,145,.20); font: 900 10px "Trebuchet MS", sans-serif; }
+    .rank-float b { color: #ffe47d; }
+    .statusbar { width: min(1380px, calc(100% - 28px)); height: 45px; margin: 12px auto 18px; padding: 0 18px; border: 2px solid #e3d9ef; border-radius: 16px; background: rgba(255,255,255,.78); color: #8b809b; font: 800 9px "Trebuchet MS", sans-serif; }
+    .statusbar b { color: #7654bd; }
+    .statusbar .online { display: inline-block; margin-right: 5px; }
+
+    .game-over { inset: 16px; border: 3px solid #fff; border-radius: 23px; background: rgba(249,245,255,.96); color: var(--ink); }
+    .game-over small { color: #8f80a6; font: 900 10px "Trebuchet MS", sans-serif; }
+    .game-over h2 { color: #7651c0; font: 950 30px "Trebuchet MS", sans-serif; }
+    .game-over strong { color: #e15d99; font: 950 20px "Trebuchet MS", sans-serif; }
+    .game-over button { width: 220px; height: 48px; border-radius: 16px; background: linear-gradient(135deg, #ffd85a, #ffb85b); color: #6b441a; font: 900 11px "Trebuchet MS", sans-serif; box-shadow: 0 6px 0 #d99438; }
+    .game-over [hidden] { display: none !important; }
+    .game-over-actions { display: flex; flex-direction: column; align-items: center; gap: 11px; margin-top: 22px; }
+    .game-over-actions button { margin-top: 0; }
+    .game-over #reviveButton { background: linear-gradient(135deg, #78dc83, #37c9d9); color: #174e55; box-shadow: 0 6px 0 #2495a2, 0 0 0 6px rgba(55,201,217,.12); }
+    .game-over #reviveButton span { font-size: 19px; }
+
+    dialog { border: 3px solid #fff; border-radius: 28px; background: #fbf9ff; color: var(--ink); box-shadow: 0 25px 70px rgba(78,57,119,.25); }
+    dialog::backdrop { background: rgba(93,72,129,.35); backdrop-filter: blur(6px); }
+    .modal-head { min-height: 86px; padding: 18px 23px; border-color: #e7def2; background: rgba(255,255,255,.95); }
+    .modal-head small { color: #986bd4; font: 900 9px "Trebuchet MS", sans-serif; }
+    .modal-head h2 { color: #513c70; font: 950 22px "Trebuchet MS", sans-serif; }
+    .challenge-card, .achievement-card, .theme-card, .full-ranking, .ranking-summary, .shop-intro { border: 2px solid #e3d9f1; border-radius: 20px; background: #fff; box-shadow: 0 5px 0 #ebe3f4; }
+    .challenge-card.complete, .achievement-card.unlocked { border-color: #bfe8b7; background: #f5fff2; }
+    .challenge-card > b, .achievement-card > b { border: 0; border-radius: 14px; background: #f1e9ff; color: #8c62cf; font-size: 20px; }
+    .challenge-card small, .achievement-card small { color: #9163d1; font: 900 9px "Trebuchet MS", sans-serif; }
+    .challenge-card h3, .achievement-card h3, .theme-card h3 { color: var(--ink); }
+    .challenge-card p, .achievement-card p, .theme-card p { color: #81768f; }
+    .leaderboard { overflow: hidden; }
+    .leaderboard li, .your-rank, .full-ranking li { border-color: #ebe4f3; background: #fff; }
+    .full-ranking li.user { border-left: 5px solid var(--cyan); background: #effcff; }
+    .theme-card { overflow: hidden; }
+    .theme-preview, .theme-preview.neon-district, .theme-preview.plasma-rift, .theme-preview.digital-zen { background-image: linear-gradient(145deg, #ffe1a5, #ffb9d5 48%, #b9eaf2); }
+    .theme-card button { border: 2px solid #dbcdef; border-radius: 12px; background: #f8f3ff; color: #7651be; font: 900 9px "Trebuchet MS", sans-serif; }
+    .shop-intro { background: linear-gradient(110deg, #fff8d9, #fff); }
+    .shop-balance { color: #ba791a; font-family: "Trebuchet MS", sans-serif; }
+    .toast { bottom: 65px; min-width: 300px; border: 3px solid #fff; border-radius: 999px; background: #7350bd; color: #fff; box-shadow: 0 8px 0 #593a9a, 0 18px 35px rgba(79,55,127,.25); font: 900 11px "Trebuchet MS", sans-serif; }
+    .toast b { color: #ffe47d; }
+
+    @media (max-width: 1080px) {
+      .topbar { grid-template-columns: 210px 1fr 190px; }
+    }
+    @media (max-width: 800px) {
+      .topbar { margin-top: 8px; padding: 12px 14px; border-radius: 20px; }
+      .nav { padding-top: 8px; }
+      .nav button { min-height: 36px; padding: 0 12px; white-space: nowrap; }
+      .arena-head { align-items: flex-start; }
+      .layout { padding-top: 22px; }
+    }
+    @media (max-width: 520px) {
+      .topbar { width: calc(100% - 14px); }
+      .brand { font-size: 17px; }
+      .brand-mark { width: 32px; height: 32px; }
+      .coin-pill { min-width: 66px; }
+      .arena-head { padding: 13px; border-radius: 18px; }
+      .arena-head h1, .arena-head h1 span:first-child { font-size: 18px; }
+      .scores { gap: 8px; }
+      .board-wrap { padding: 9px; border-radius: 22px; box-shadow: 0 6px 0 #7e67bf, 0 16px 35px rgba(101,77,156,.18); }
+      .board { gap: 3px; padding: 5px; border-radius: 16px; }
+      .cell { border-width: 1px; border-radius: 5px; }
+      .cell.filled { border-width: 1px; border-radius: 5px; }
+      .piece { min-height: 73px; border-radius: 15px; }
+      .statusbar { width: calc(100% - 14px); }
+    }
+  </style>
+  <style>
+    /* Cenários animados da loja */
+    .board-wrap { isolation: isolate; }
+    .theme-motion {
+      position: absolute;
+      inset: 16px;
+      z-index: 0;
+      overflow: hidden;
+      border-radius: 22px;
+      pointer-events: none;
+      background-size: 220% 220%;
+      animation: scenery-colors 12s ease-in-out infinite alternate;
+    }
+    .theme-motion span {
+      position: absolute;
+      left: var(--x);
+      bottom: -64px;
+      z-index: 0;
+      font-size: var(--size);
+      filter: drop-shadow(0 3px 2px rgba(69,54,95,.16));
+      opacity: .72;
+      animation: scenery-float var(--dur) linear infinite;
+      animation-delay: var(--delay);
+      will-change: transform;
+    }
+    .board { z-index: 2; background: rgba(255,255,255,.20); }
+    .board-wrap::before { z-index: 1; }
+
+    body[data-arena-theme="rainbow-party"] .board-wrap { background: linear-gradient(145deg, #b99eed, #8a70d2); box-shadow: 0 9px 0 #7156b5, 0 22px 45px rgba(101,77,156,.22); }
+    body[data-arena-theme="rainbow-party"] .theme-motion { background: linear-gradient(135deg, #ffb5d2, #ffe18a 28%, #9be7c1 52%, #8fdcf0 75%, #c8aff5); }
+
+    body[data-arena-theme="candy-kingdom"] .board-wrap { background: linear-gradient(145deg, #ff9fc7, #e676aa); box-shadow: 0 9px 0 #c45189, 0 22px 45px rgba(188,66,126,.22); }
+    body[data-arena-theme="candy-kingdom"] .theme-motion { background: repeating-linear-gradient(135deg, #fff0f7 0 38px, #ffd0e4 38px 76px, #fff1bd 76px 114px); animation-duration: 9s; }
+
+    body[data-arena-theme="ocean-world"] .board-wrap { background: linear-gradient(145deg, #38c9db, #1685bd); box-shadow: 0 9px 0 #106c9d, 0 22px 45px rgba(20,123,169,.25); }
+    body[data-arena-theme="ocean-world"] .theme-motion { background: linear-gradient(180deg, #8ee7f3 0%, #39bfd8 45%, #1775b3 100%); }
+    body[data-arena-theme="ocean-world"] .theme-motion span { opacity: .82; animation-name: ocean-rise; }
+
+    body[data-arena-theme="space-adventure"] .board-wrap { background: linear-gradient(145deg, #6451b8, #382b7f); box-shadow: 0 9px 0 #2b215f, 0 22px 45px rgba(47,35,104,.32); }
+    body[data-arena-theme="space-adventure"] .theme-motion { background: radial-gradient(circle at 25% 25%, #6d52bc 0%, #30266f 42%, #141743 100%); }
+    body[data-arena-theme="space-adventure"] .theme-motion span { opacity: .88; animation-name: space-cruise; }
+
+    body[data-arena-theme="enchanted-forest"] .board-wrap { background: linear-gradient(145deg, #7ecb7e, #3d9469); box-shadow: 0 9px 0 #2e7552, 0 22px 45px rgba(48,123,85,.24); }
+    body[data-arena-theme="enchanted-forest"] .theme-motion { background: linear-gradient(150deg, #d6f7b4, #78cf8b 52%, #3b8d68); }
+    body[data-arena-theme="enchanted-forest"] .theme-motion span { animation-name: forest-flutter; }
+
+    body[data-arena-theme="dino-world"] .board-wrap { background: linear-gradient(145deg, #7bbf55, #e39145); box-shadow: 0 9px 0 #9d6030, 0 22px 45px rgba(133,84,41,.25); }
+    body[data-arena-theme="dino-world"] .theme-motion { background: linear-gradient(180deg, #fbd581 0%, #9fd36c 43%, #4c9658 100%); }
+    body[data-arena-theme="dino-world"] .theme-motion span { animation-name: dino-walk; opacity: .82; }
+
+    .theme-preview { overflow: hidden; isolation: isolate; background-size: 220% 220% !important; animation: scenery-colors 9s ease-in-out infinite alternate; }
+    .theme-preview.rainbow-party { background: linear-gradient(135deg, #ffb5d2, #ffe18a 28%, #9be7c1 52%, #8fdcf0 75%, #c8aff5); }
+    .theme-preview.candy-kingdom { background: repeating-linear-gradient(135deg, #fff0f7 0 28px, #ffd0e4 28px 56px, #fff1bd 56px 84px); }
+    .theme-preview.ocean-world { background: linear-gradient(180deg, #8ee7f3, #39bfd8 48%, #1775b3); }
+    .theme-preview.space-adventure { background: radial-gradient(circle at 25% 25%, #765ac6, #30266f 48%, #141743); }
+    .theme-preview.enchanted-forest { background: linear-gradient(150deg, #d6f7b4, #78cf8b 52%, #3b8d68); }
+    .theme-preview.dino-world { background: linear-gradient(180deg, #fbd581, #9fd36c 48%, #4c9658); }
+    .theme-preview span {
+      position: absolute;
+      z-index: 1;
+      font-size: clamp(18px, 2.8vw, 29px);
+      filter: drop-shadow(0 3px 2px rgba(69,54,95,.16));
+      animation: preview-drift 5s ease-in-out infinite;
+    }
+    .theme-preview span:nth-child(1) { left: 9%; top: 18%; }
+    .theme-preview span:nth-child(2) { left: 34%; top: 51%; animation-delay: -1.2s; }
+    .theme-preview span:nth-child(3) { right: 30%; top: 15%; animation-delay: -2.4s; }
+    .theme-preview span:nth-child(4) { right: 8%; top: 48%; animation-delay: -3.4s; }
+    .theme-preview::after { z-index: 2; border-radius: 13px; box-shadow: inset 0 0 28px rgba(69,54,95,.15); }
+
+    @keyframes scenery-colors {
+      from { background-position: 0% 20%; }
+      to { background-position: 100% 80%; }
+    }
+    @keyframes scenery-float {
+      0% { transform: translate3d(0, 0, 0) rotate(-8deg); }
+      45% { transform: translate3d(18px, -250px, 0) rotate(8deg); }
+      100% { transform: translate3d(-10px, -560px, 0) rotate(-5deg); }
+    }
+    @keyframes ocean-rise {
+      0% { transform: translate3d(0, 0, 0) scale(.75); }
+      50% { transform: translate3d(25px, -250px, 0) scale(1); }
+      100% { transform: translate3d(-8px, -560px, 0) scale(.8); }
+    }
+    @keyframes space-cruise {
+      0% { transform: translate3d(-70px, 20px, 0) rotate(-10deg); }
+      100% { transform: translate3d(590px, -510px, 0) rotate(15deg); }
+    }
+    @keyframes forest-flutter {
+      0% { transform: translate3d(-12px, 0, 0) rotate(-18deg); }
+      25% { transform: translate3d(28px, -145px, 0) rotate(15deg); }
+      55% { transform: translate3d(-18px, -315px, 0) rotate(-10deg); }
+      100% { transform: translate3d(20px, -560px, 0) rotate(18deg); }
+    }
+    @keyframes dino-walk {
+      0% { transform: translate3d(-90px, -25px, 0) scale(.85); }
+      48% { transform: translate3d(250px, -260px, 0) scale(1); }
+      100% { transform: translate3d(590px, -520px, 0) scale(.85); }
+    }
+    @keyframes preview-drift {
+      0%, 100% { transform: translateY(0) rotate(-6deg); }
+      50% { transform: translateY(-10px) rotate(7deg); }
+    }
+
+    @media (max-width: 520px) {
+      .theme-motion { inset: 9px; border-radius: 16px; }
+      .theme-motion span { font-size: calc(var(--size) * .78); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .theme-motion, .theme-motion span, .theme-preview, .theme-preview span { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <button class="brand" id="brandButton" aria-label="Voltar ao jogo">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span>BLOCO <em>★</em> MANIA</span>
+    </button>
+    <nav class="nav" aria-label="Navegação principal">
+      <button class="active" data-view="play">Jogar</button>
+      <button data-view="challenges">Desafios</button>
+      <button data-view="achievements">Conquistas</button>
+      <button data-view="shop">Loja</button>
+    </nav>
+    <div class="profile">
+      <button class="sound" id="soundButton" title="Som ligado" aria-label="Desativar som">🔊</button>
+      <span class="coin-pill" title="Créditos da Arena">◈ <b id="coinValue">650</b></span>
+      <i class="online"></i>
+      <span class="profile-copy"><small id="levelLabel">NÍVEL 12</small><b>FLAVIO</b></span>
+      <span class="avatar">😊</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="left">
+      <div class="rail-title eyebrow"><span>MISSÃO ATIVA</span><b>01 / 06</b></div>
+      <article class="mission">
+        <div class="mission-icon">⭐</div>
+        <small>DESAFIO DIÁRIO</small>
+        <h2>Limpe 12 linhas<br>em uma partida</h2>
+        <div class="progress-label"><span>Progresso</span><b id="missionText">0 / 12</b></div>
+        <div class="track"><i id="missionBar"></i></div>
+        <div class="reward"><span>PRÊMIO</span><b>+250 ESTRELAS</b></div>
+      </article>
+      <button class="streak" data-open="challenges"><b>🔥</b><span><small>VOCÊ ESTÁ ARRASANDO!</small><strong>6 DIAS</strong></span><i>↗</i></button>
+      <div class="season"><small>FESTA ESPECIAL</small><strong>ARCO-ÍRIS<br>DE BLOCOS</strong><span>12d 08h restantes</span></div>
+    </aside>
+
+    <section class="arena" aria-label="Área de jogo">
+      <div class="arena-head">
+        <div><small id="modeHint">BRINCADEIRA CLÁSSICA</small><h1><span id="modeTitle">CLÁSSICO</span> <span id="modeClock">10×10</span></h1><div class="mode-controls"><select class="mode-select" id="modeSelect" aria-label="Modo de jogo"><option value="classic">CLÁSSICO</option><option value="blitz">CORRIDA 2 MIN</option><option value="zen">TRANQUILO</option></select><select class="mode-select map-select" id="mapSelect" aria-label="Mapa da partida"></select></div></div>
+        <div class="scores">
+          <div class="score best"><small>MELHOR</small><b id="bestScore">18.420</b></div>
+          <div class="score live"><small>PONTOS</small><b id="score">00.000</b></div>
+          <button class="restart" id="restartButton" title="Nova partida" aria-label="Começar nova partida">↻</button>
+        </div>
+      </div>
+      <div class="combo"><span>SUPER COMBO</span><b id="comboValue">× 1.0</b><i id="comboHint">COMPLETE LINHAS PARA BRILHAR!</i></div>
+      <div class="map-strip"><b id="mapName">ILHA ARCO-ÍRIS</b><span id="mapDescription">Um começo colorido para encaixar e brincar.</span></div>
+      <div class="board-wrap">
+        <div class="theme-motion" id="themeMotion" aria-hidden="true"></div>
+        <div class="board" id="board" role="grid" aria-label="Tabuleiro 10 por 10"></div>
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="game-over" id="gameOver" role="dialog" aria-modal="true">
+          <small id="gameOverMessage">VOCÊ JOGOU MUITO BEM!</small><h2 id="gameOverTitle">FIM DA RODADA</h2><strong id="finalScore">00.000 PTS</strong>
+          <div class="game-over-actions">
+            <button id="reviveButton" hidden>REVIVER E CONTINUAR <span>💚</span></button>
+            <button id="playAgain">BRINCAR DE NOVO <span>→</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="tray" id="tray" aria-label="Peças disponíveis"></div>
+      <p class="hint"><span>↖</span> ARRASTE OU SELECIONE UMA PEÇA E TOQUE NO TABULEIRO</p>
+    </section>
+
+    <aside class="right">
+      <div class="ranking-head"><div><small class="eyebrow">PLACAR DOS AMIGOS</small><h2>SUPER JOGADORES</h2></div><button class="icon-button" data-open="ranking" aria-label="Abrir ranking">↗</button></div>
+      <div class="league"><b class="league-badge">🌟</b><div><small>SUA TURMA</small><strong>LIGA ESTRELA</strong><span id="rankLabel">#09 NA TURMA</span></div></div>
+      <ol class="leaderboard" id="leaderboard"></ol>
+      <div class="your-rank" id="yourRank"></div>
+      <button class="wide-button" data-open="ranking">VER RANKING COMPLETO <span>→</span></button>
+      <button class="achievement-tease" data-open="achievements"><b>🏆</b><span><small>MEUS TROFÉUS</small><b id="achievementText">0 de 8 liberadas</b><i id="achievementPercent">0% concluído</i></span><strong id="achievementValue">0%</strong></button>
+    </aside>
+  </main>
+
+  <button class="rank-float" data-open="ranking" aria-label="Abrir ranking mundial"><b>◆</b><span>VER RANKING</span></button>
+
+  <footer class="statusbar"><span><i class="online"></i> 14.832 AMIGOS JOGANDO</span><span class="center">ENCAIXE • COMPLETE • COMEMORE 🎉</span><span>BLOCO MANIA <b>PT-BR</b></span></footer>
+
+  <dialog id="panelDialog">
+    <header class="modal-head"><div><small>BLOCO MANIA • FESTA ARCO-ÍRIS</small><h2 id="dialogTitle">MISSÕES DIVERTIDAS</h2></div><button id="closeDialog" aria-label="Fechar">×</button></header>
+    <div class="modal-body" id="dialogBody"></div>
+  </dialog>
+  <div class="toast" id="toast" role="status"><b>✦</b><span id="toastText"></span></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const SUPABASE_URL = "https://bpqhisgayvcgiwzvappw.supabase.co";
+      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwcWhpc2dheXZjZ2l3enZhcHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1OTI3MjYsImV4cCI6MjEwMzE2ODcyNn0.KrfAK_R36r5kqPKqevPrKGBvLwpgG0bLV5FEbw6TyT8";
+      const RANKING_TABLE = "Ranking Block Aren";
+      const PLAYER_NAME = "FLAVIO";
+      const PLAYER_COUNTRY = "BR";
+
+      const SIZE = 10;
+      const colors = ["lime", "cyan", "violet", "orange"];
+      const shapes = [
+        { name: "Ponto", cells: [[0,0]] },
+        { name: "Dupla", cells: [[0,0],[0,1]] },
+        { name: "Barra 3", cells: [[0,0],[0,1],[0,2]] },
+        { name: "Coluna 3", cells: [[0,0],[1,0],[2,0]] },
+        { name: "Barra 4", cells: [[0,0],[0,1],[0,2],[0,3]] },
+        { name: "Quadrado", cells: [[0,0],[0,1],[1,0],[1,1]] },
+        { name: "Canto", cells: [[0,0],[1,0],[1,1]] },
+        { name: "Canto XL", cells: [[0,0],[1,0],[2,0],[2,1],[2,2]] },
+        { name: "Zigue", cells: [[0,0],[0,1],[1,1],[1,2]] },
+        { name: "T", cells: [[0,0],[0,1],[0,2],[1,1]] },
+        { name: "Bloco 3×3", cells: [[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]] }
+      ];
+
+      const maps = {
+        classic: [
+          { id: "foundation", name: "ILHA ARCO-ÍRIS", description: "Um começo colorido para encaixar e brincar.", cells: ["7-0","7-1","7-7","7-8","8-0","8-4","8-7","9-0","9-1","9-4","9-5","9-8"] },
+          { id: "crossroads", name: "CRUZAMENTO DO TESOURO", description: "O centro esconde muitas jogadas divertidas.", cells: ["3-4","4-3","4-4","4-5","5-4","7-1","7-8","8-1","8-8"] },
+          { id: "ruins", name: "CASTELO DOS BLOCOS", description: "Encontre o melhor lugar para cada bloquinho.", cells: ["1-1","1-2","2-1","3-7","4-7","4-8","6-3","7-2","7-3","8-6","8-7","9-7"] }
+        ],
+        blitz: [
+          { id: "redline", name: "PISTA FOGUETE", description: "Corredores rápidos para combos superlegais.", cells: ["2-0","2-1","2-2","2-7","2-8","2-9","7-0","7-1","7-8","7-9"] },
+          { id: "thunder", name: "RAIO SALTITANTE", description: "Uma trilha em zigue-zague atravessa o tabuleiro.", cells: ["1-7","2-6","2-7","3-5","4-4","4-5","5-3","6-2","6-3","7-1"] },
+          { id: "reactor", name: "TORRE ENCANTADA", description: "Dê a volta no centro e descubra novas jogadas.", cells: ["3-3","3-4","3-5","3-6","4-3","4-6","5-3","5-6","6-3","6-4","6-5","6-6"] }
+        ],
+        zen: [
+          { id: "open-garden", name: "JARDIM ABERTO", description: "Tabuleiro limpo para jogar sem pressão.", cells: [] },
+          { id: "islands", name: "ILHAS SERENAS", description: "Quatro pequenas ilhas nas extremidades.", cells: ["1-1","1-2","2-1","1-7","1-8","2-8","7-1","8-1","8-2","7-8","8-7","8-8"] },
+          { id: "flow", name: "TRILHA DAS CORES", description: "Uma trilha suave atravessa o mapa.", cells: ["1-1","2-2","3-3","4-4","5-5","6-6","7-7","8-8"] }
+        ]
+      };
+      const arenaThemes = [
+        { id: "rainbow-party", name: "FESTA ARCO-ÍRIS", description: "Nuvens coloridas e estrelas saltitantes.", price: 0, icons: ["🌈","⭐","☁️","✨"] },
+        { id: "candy-kingdom", name: "REINO DOS DOCES", description: "Pirulitos, confeitos e doces flutuantes.", price: 450, icons: ["🍭","🍬","🧁","🍩"] },
+        { id: "ocean-world", name: "FUNDO DO MAR", description: "Bolhas e peixinhos nadando bem devagar.", price: 600, icons: ["🫧","🐠","🐟","⭐"] },
+        { id: "space-adventure", name: "AVENTURA ESPACIAL", description: "Planetas, estrelas e foguetes em movimento.", price: 750, icons: ["🚀","🪐","⭐","☄️"] },
+        { id: "enchanted-forest", name: "FLORESTA ENCANTADA", description: "Borboletas, folhas e brilhos mágicos.", price: 900, icons: ["🦋","🍃","✨","🌼"] },
+        { id: "dino-world", name: "MUNDO DOS DINOSSAUROS", description: "Dinossauros passeando em uma selva divertida.", price: 1100, icons: ["🦕","🦖","🌿","🌋"] }
+      ];
+      let worldPlayers = [
+        { name: "LUNA.EXE", country: "🇧🇷", score: 48920, color: "lime" },
+        { name: "KAIRO", country: "🇯🇵", score: 47110, color: "cyan" },
+        { name: "M4TRIX", country: "🇩🇪", score: 45870, color: "violet" },
+        { name: "NEOFOX", country: "🇺🇸", score: 43240, color: "orange" },
+        { name: "ZARA.BIT", country: "🇵🇹", score: 41930, color: "cyan" },
+        { name: "HYPERION", country: "🇰🇷", score: 40780, color: "violet" },
+        { name: "CUB3R", country: "🇫🇷", score: 39560, color: "orange" },
+        { name: "PIXELMAX", country: "🇲🇽", score: 38210, color: "lime" }
+      ];
+      const challenges = [
+        { icon: "⭐", tag: "HOJE", scope: "daily", title: "Complete 12 linhas", detail: "para ganhar muitas estrelinhas", metric: "lines", target: 12, reward: "+250 ⭐" },
+        { icon: "🧩", tag: "HOJE", scope: "daily", title: "Encaixe 20 peças", detail: "e mostre que você manda bem", metric: "placements", target: 20, reward: "+180 ⭐" },
+        { icon: "⚡", tag: "SUPER", scope: "game", title: "Faça um combo ×3", detail: "em uma única rodada", metric: "bestCombo", target: 3, reward: "MEDALHA" },
+        { icon: "🎯", tag: "SEMANA", scope: "weekly", title: "Faça 10.000 pontos", detail: "em uma única rodada", metric: "score", target: 10000, reward: "+900 ⭐" },
+        { icon: "🌈", tag: "SEMANA", scope: "weekly", title: "Use 75 peças", detail: "durante esta semana", metric: "placements", target: 75, reward: "TEMA NOVO" },
+        { icon: "🏆", tag: "FESTA", title: "Complete 50 linhas", detail: "durante a festa arco-íris", metric: "lines", target: 50, reward: "1.500 ⭐" }
+      ];
+      const achievements = [
+        { id: "first-move", icon: "◆", name: "Primeiro Encaixe", desc: "Posicione sua primeira peça.", target: 1, metric: "placements" },
+        { id: "first-line", icon: "🌈", name: "Linha Colorida", desc: "Complete uma linha inteirinha.", target: 1, metric: "lines" },
+        { id: "combo-three", icon: "⚡", name: "Embalado", desc: "Alcance um combo ×3.", target: 3, metric: "bestCombo" },
+        { id: "score-five", icon: "⭐", name: "Craque dos Blocos", desc: "Faça 5.000 pontos.", target: 5000, metric: "score" },
+        { id: "architect", icon: "🏰", name: "Construtor de Castelos", desc: "Posicione 50 peças.", target: 50, metric: "placements" },
+        { id: "cleaner", icon: "↯", name: "Tela Limpa", desc: "Limpe 25 linhas.", target: 25, metric: "lines" },
+        { id: "diamond", icon: "◇", name: "Diamante", desc: "Faça 15.000 pontos.", target: 15000, metric: "score" },
+        { id: "legend", icon: "👑", name: "Rei dos Bloquinhos", desc: "Faça 30.000 pontos.", target: 30000, metric: "score" }
+      ];
+
+      let profile = loadProfile();
+      let mode = maps[profile.lastMode] ? profile.lastMode : "classic";
+      let currentMapId = profile.mapSelections[mode] || maps[mode][0].id;
+      let board = boardForMap(currentMapId);
+      let tray = starterTray();
+      let selected = null;
+      let hovered = null;
+      let score = 0;
+      let combo = 0;
+      let soundOn = profile.soundOn !== false;
+      let toastTimer = 0;
+      let gameStats = { placements: 0, lines: 0, bestCombo: 0, score: 0 };
+      let pointerDrag = null;
+      let suppressClickUntil = 0;
+      let audioContext = null;
+      let blitzRemaining = 120;
+      let motionThemeId = "";
+      let reviveUsed = false;
+
+      const $ = (selector) => document.querySelector(selector);
+      const boardElement = $("#board");
+      const trayElement = $("#tray");
+      const dialog = $("#panelDialog");
+
+      function mapFor(id = currentMapId) {
+        return maps[mode].find((item) => item.id === id) || maps[mode][0];
+      }
+
+      function boardForMap(id) {
+        const result = Array(SIZE * SIZE).fill(null);
+        const definition = maps[mode]?.find((item) => item.id === id) || maps[mode]?.[0] || maps.classic[0];
+        definition.cells.forEach((key, index) => {
+          const [row, col] = key.split("-").map(Number);
+          result[row * SIZE + col] = colors[(index + maps[mode].indexOf(definition)) % colors.length];
+        });
+        return result;
+      }
+
+      function starterTray() {
+        return [
+          { id: "starter-corner", name: "Canto", cells: [[0,0],[1,0],[1,1]], color: "lime" },
+          { id: "starter-bar", name: "Barra 4", cells: [[0,0],[0,1],[0,2],[0,3]], color: "cyan" },
+          { id: "starter-zig", name: "Zigue", cells: [[0,0],[0,1],[1,1],[1,2]], color: "violet" }
+        ];
+      }
+
+      function newTray() {
+        return Array.from({ length: 3 }, (_, index) => {
+          const shape = shapes[Math.floor(Math.random() * shapes.length)];
+          return { ...shape, id: `${Date.now()}-${index}`, color: colors[Math.floor(Math.random() * colors.length)] };
+        });
+      }
+
+      function loadProfile() {
+        const fallback = { bestScore: 18420, coins: 650, ownedThemes: ["rainbow-party"], activeTheme: "rainbow-party", lastMode: "classic", mapSelections: { classic: "foundation", blitz: "redline", zen: "open-garden" }, soundOn: true, stats: { placements: 0, lines: 0, bestCombo: 0 }, daily: { key: "", placements: 0, lines: 0 }, weekly: { key: "", placements: 0, lines: 0, score: 0 }, unlocked: [] };
+        try {
+          const saved = JSON.parse(localStorage.getItem("block-arena-html-profile"));
+          const result = saved ? { ...fallback, ...saved, mapSelections: { ...fallback.mapSelections, ...saved.mapSelections }, ownedThemes: Array.isArray(saved.ownedThemes) ? saved.ownedThemes : fallback.ownedThemes, stats: { ...fallback.stats, ...saved.stats }, daily: { ...fallback.daily, ...saved.daily }, weekly: { ...fallback.weekly, ...saved.weekly } } : fallback;
+          const legacyThemes = { carbon: "rainbow-party", "neon-district": "candy-kingdom", "plasma-rift": "space-adventure", "digital-zen": "enchanted-forest" };
+          const validThemes = new Set(arenaThemes.map((theme) => theme.id));
+          result.ownedThemes = [...new Set(result.ownedThemes.map((id) => legacyThemes[id] || id).filter((id) => validThemes.has(id)))];
+          if (!result.ownedThemes.includes("rainbow-party")) result.ownedThemes.unshift("rainbow-party");
+          result.activeTheme = legacyThemes[result.activeTheme] || result.activeTheme;
+          if (!validThemes.has(result.activeTheme) || !result.ownedThemes.includes(result.activeTheme)) result.activeTheme = "rainbow-party";
+          resetTimedProgress(result);
+          return result;
+        } catch (_) { return fallback; }
+      }
+
+      function periodKeys(now = new Date()) {
+        const day = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+        const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
+        return { day, week: `${monday.getFullYear()}-${monday.getMonth() + 1}-${monday.getDate()}` };
+      }
+
+      function resetTimedProgress(target = profile) {
+        const keys = periodKeys();
+        if (target.daily.key !== keys.day) target.daily = { key: keys.day, placements: 0, lines: 0 };
+        if (target.weekly.key !== keys.week) target.weekly = { key: keys.week, placements: 0, lines: 0, score: 0 };
+      }
+
+      function saveProfile() {
+        try {
+          localStorage.setItem("block-arena-html-profile", JSON.stringify(profile));
+        } catch (_) {
+          // O jogo continua funcionando mesmo se o navegador bloquear dados locais.
+        }
+      }
+
+      function supabaseHeaders(extra = {}) {
+        return {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          ...extra,
+        };
+      }
+
+      function countryFlag(countryCode) {
+        const code = String(countryCode || "BR").toUpperCase().slice(0, 2);
+        return code.length === 2
+          ? String.fromCodePoint(...[...code].map((letter) => 127397 + letter.charCodeAt(0)))
+          : "🌎";
+      }
+
+      function deviceId() {
+        const storageKey = "block-mania-player-id";
+        try {
+          let value = localStorage.getItem(storageKey);
+          if (!value) {
+            value = crypto.randomUUID?.() || "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (character) =>
+              (Number(character) ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> Number(character) / 4).toString(16)
+            );
+            localStorage.setItem(storageKey, value);
+          }
+          return value;
+        } catch (_) {
+          return "00000000-0000-4000-8000-000000000001";
+        }
+      }
+
+      async function loadWorldRanking() {
+        try {
+          const table = encodeURIComponent(RANKING_TABLE);
+          const fields = "player_name,score,country";
+          const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=${fields}&order=score.desc&limit=20`, {
+            headers: supabaseHeaders({ Accept: "application/json" }),
+          });
+          if (!response.ok) throw new Error(`Ranking indisponível (${response.status})`);
+          const players = await response.json();
+          const palette = ["lime", "cyan", "violet", "orange"];
+          worldPlayers = players.map((player, index) => ({
+            name: String(player.player_name || "JOGADOR").slice(0, 20),
+            country: countryFlag(player.country),
+            score: Math.max(0, Number(player.score) || 0),
+            color: palette[index % palette.length],
+          }));
+          renderStatus();
+        } catch (error) {
+          console.warn("Ranking mundial ainda não está disponível.", error);
+        }
+      }
+
+      async function submitWorldScore() {
+        if (score <= 0) return;
+        try {
+          const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/submit_block_arena_score`, {
+            method: "POST",
+            headers: supabaseHeaders({ "Content-Type": "application/json" }),
+            body: JSON.stringify({
+              p_player_name: PLAYER_NAME,
+              p_score: score,
+              p_country: PLAYER_COUNTRY,
+              p_device_id: deviceId(),
+            }),
+          });
+          if (!response.ok) throw new Error(`Pontuação não enviada (${response.status})`);
+          await loadWorldRanking();
+        } catch (error) {
+          console.warn("A pontuação ficou salva apenas neste aparelho.", error);
+        }
+      }
+
+      function formatScore(value) {
+        return value.toLocaleString("pt-BR", { minimumIntegerDigits: 5 });
+      }
+
+      function metricValue(metric, scope = "season") {
+        if (scope === "game") return gameStats[metric] || 0;
+        if (scope === "daily") return profile.daily[metric] || 0;
+        if (scope === "weekly") return profile.weekly[metric] || 0;
+        return metric === "score" ? profile.bestScore : (profile.stats[metric] || 0);
+      }
+
+      function playSound(type) {
+        if (!soundOn) return;
+        try {
+          audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+          const osc = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          const notes = { place: 330, line: 660, combo: 880, error: 130, gameover: 90 };
+          osc.type = type === "error" || type === "gameover" ? "sawtooth" : "sine";
+          osc.frequency.setValueAtTime(notes[type] || 330, audioContext.currentTime);
+          if (type === "line" || type === "combo") osc.frequency.exponentialRampToValueAtTime((notes[type] || 660) * 1.5, audioContext.currentTime + .14);
+          gain.gain.setValueAtTime(.08, audioContext.currentTime);
+          gain.gain.exponentialRampToValueAtTime(.001, audioContext.currentTime + .2);
+          osc.connect(gain).connect(audioContext.destination);
+          osc.start(); osc.stop(audioContext.currentTime + .21);
+        } catch (_) {}
+      }
+
+      function canPlace(piece, baseRow, baseCol) {
+        return piece.cells.every(([row, col]) => {
+          const targetRow = baseRow + row;
+          const targetCol = baseCol + col;
+          return targetRow >= 0 && targetCol >= 0 && targetRow < SIZE && targetCol < SIZE && !board[targetRow * SIZE + targetCol];
+        });
+      }
+
+      function hasAnyMove() {
+        return tray.some((piece) => piece && Array.from({ length: SIZE * SIZE }, (_, index) => canPlace(piece, Math.floor(index / SIZE), index % SIZE)).some(Boolean));
+      }
+
+      function showNoMoves() {
+        const canRevive = !reviveUsed;
+        void submitWorldScore();
+        $("#finalScore").textContent = `${formatScore(score)} PTS`;
+        $("#gameOverMessage").textContent = canRevive ? "FICOU SEM ESPAÇO? VOCÊ TEM UMA CHANCE!" : "VOCÊ JOGOU MUITO BEM!";
+        $("#gameOverTitle").textContent = canRevive ? "USE SEU REVIVER" : "FIM DA RODADA";
+        $("#reviveButton").hidden = !canRevive;
+        $("#playAgain").hidden = canRevive;
+        $("#gameOver").classList.add("show");
+        playSound(canRevive ? "line" : "gameover");
+      }
+
+      function reviveGame() {
+        if (reviveUsed) return;
+        const piece = tray.find(Boolean);
+        if (!piece) return;
+        reviveUsed = true;
+        $("#reviveButton").disabled = true;
+        $("#gameOverMessage").textContent = "ABRINDO UM ESPAÇO MÁGICO...";
+        const height = Math.max(...piece.cells.map(([row]) => row)) + 1;
+        const width = Math.max(...piece.cells.map(([, col]) => col)) + 1;
+        let best = { row: 0, col: 0, occupied: -1 };
+        for (let row = 0; row <= SIZE - height; row += 1) {
+          for (let col = 0; col <= SIZE - width; col += 1) {
+            let occupied = 0;
+            for (let r = 0; r < height; r += 1) {
+              for (let c = 0; c < width; c += 1) occupied += board[(row + r) * SIZE + col + c] ? 1 : 0;
+            }
+            if (occupied > best.occupied) best = { row, col, occupied };
+          }
+        }
+        const removed = new Set();
+        for (let row = 0; row < height; row += 1) {
+          for (let col = 0; col < width; col += 1) {
+            const index = (best.row + row) * SIZE + best.col + col;
+            if (board[index]) removed.add(index);
+          }
+        }
+        const extraBlocks = board.map((color, index) => color ? index : -1).filter((index) => index >= 0 && !removed.has(index));
+        while (removed.size < 10 && extraBlocks.length) {
+          const pick = Math.floor(Math.random() * extraBlocks.length);
+          removed.add(extraBlocks.splice(pick, 1)[0]);
+        }
+        removed.forEach((index) => boardElement.querySelector(`[data-index="${index}"]`)?.classList.add("clearing"));
+        setTimeout(() => {
+          removed.forEach((index) => { board[index] = null; });
+          selected = null;
+          hovered = null;
+          $("#gameOver").classList.remove("show");
+          $("#reviveButton").disabled = false;
+          render();
+          playSound("combo");
+          notify(`Reviver usado! ${removed.size} bloquinhos saíram do caminho. 💚`);
+        }, 340);
+      }
+
+      function renderBoard() {
+        boardElement.innerHTML = "";
+        board.forEach((color, index) => {
+          const cell = document.createElement("button");
+          const row = Math.floor(index / SIZE);
+          const col = index % SIZE;
+          cell.className = `cell${color ? ` filled ${color}` : ""}`;
+          cell.dataset.index = String(index);
+          cell.dataset.baseClass = cell.className;
+          cell.setAttribute("role", "gridcell");
+          cell.setAttribute("aria-label", `Linha ${row + 1}, coluna ${col + 1}${color ? ", ocupada" : ", livre"}`);
+          cell.addEventListener("mouseenter", () => showPreview(index));
+          cell.addEventListener("focus", () => showPreview(index));
+          cell.addEventListener("mouseleave", clearPreview);
+          cell.addEventListener("blur", clearPreview);
+          cell.addEventListener("dragenter", () => showPreview(index));
+          cell.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "move";
+            showPreview(index);
+          });
+          cell.addEventListener("drop", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const rawIndex = event.dataTransfer.getData("application/x-block-arena") || event.dataTransfer.getData("text/plain");
+            const pieceIndex = Number(rawIndex);
+            clearPreview();
+            if (Number.isInteger(pieceIndex)) placePiece(row, col, pieceIndex);
+          });
+          cell.addEventListener("click", () => { if (selected !== null) placePiece(row, col, selected); });
+          boardElement.appendChild(cell);
+        });
+      }
+
+      function clearPreview() {
+        hovered = null;
+        boardElement.querySelectorAll(".cell").forEach((cell) => {
+          cell.className = cell.dataset.baseClass || "cell";
+        });
+      }
+
+      function showPreview(index) {
+        const piece = selected === null ? null : tray[selected];
+        clearPreview();
+        if (!piece) return;
+        hovered = index;
+        const baseRow = Math.floor(index / SIZE);
+        const baseCol = index % SIZE;
+        const valid = canPlace(piece, baseRow, baseCol);
+        piece.cells.forEach(([row, col]) => {
+          const targetRow = baseRow + row;
+          const targetCol = baseCol + col;
+          if (targetRow < 0 || targetCol < 0 || targetRow >= SIZE || targetCol >= SIZE) return;
+          const target = boardElement.querySelector(`[data-index="${targetRow * SIZE + targetCol}"]`);
+          if (target) target.classList.add("preview", valid ? piece.color : "invalid");
+        });
+      }
+
+      function renderTray() {
+        trayElement.innerHTML = "";
+        tray.forEach((piece, pieceIndex) => {
+          if (!piece) {
+            const used = document.createElement("div");
+            used.className = "piece used";
+            used.textContent = "USADA";
+            trayElement.appendChild(used);
+            return;
+          }
+          const button = document.createElement("button");
+          button.className = `piece${selected === pieceIndex ? " selected" : ""}`;
+          button.draggable = true;
+          button.setAttribute("aria-label", `Selecionar peça ${piece.name}`);
+          button.setAttribute("aria-pressed", String(selected === pieceIndex));
+          const grid = document.createElement("span");
+          grid.className = "mini-grid";
+          Array.from({ length: 12 }, (_, index) => {
+            const row = Math.floor(index / 4);
+            const col = index % 4;
+            const block = document.createElement("i");
+            if (piece.cells.some(([r, c]) => r === row && c === col)) block.className = piece.color;
+            grid.appendChild(block);
+          });
+          const label = document.createElement("small");
+          label.textContent = piece.name;
+          button.append(grid, label);
+          button.addEventListener("click", () => {
+            if (Date.now() < suppressClickUntil) return;
+            selected = selected === pieceIndex ? null : pieceIndex;
+            render();
+          });
+          button.addEventListener("dragstart", (event) => {
+            selected = pieceIndex;
+            event.dataTransfer.effectAllowed = "move";
+            event.dataTransfer.setData("text/plain", String(pieceIndex));
+            event.dataTransfer.setData("application/x-block-arena", String(pieceIndex));
+            button.classList.add("selected", "dragging");
+            button.setAttribute("aria-pressed", "true");
+          });
+          button.addEventListener("dragend", () => {
+            clearPreview();
+            if (button.isConnected) button.classList.remove("dragging");
+          });
+          button.addEventListener("pointerdown", (event) => {
+            if (!event.isPrimary || event.button !== 0) return;
+            pointerDrag = { id: event.pointerId, pieceIndex, startX: event.clientX, startY: event.clientY, ghost: null };
+            button.setPointerCapture?.(event.pointerId);
+          });
+          button.addEventListener("pointermove", (event) => {
+            if (!pointerDrag || pointerDrag.id !== event.pointerId) return;
+            const moved = Math.hypot(event.clientX - pointerDrag.startX, event.clientY - pointerDrag.startY);
+            if (moved < 7 && !pointerDrag.ghost) return;
+            event.preventDefault();
+            if (!pointerDrag.ghost) {
+              selected = pieceIndex;
+              const ghost = document.createElement("div");
+              ghost.className = "drag-ghost";
+              ghost.appendChild(grid.cloneNode(true));
+              document.body.appendChild(ghost);
+              pointerDrag.ghost = ghost;
+              button.classList.add("dragging", "selected");
+            }
+            pointerDrag.ghost.style.left = `${event.clientX}px`;
+            pointerDrag.ghost.style.top = `${event.clientY}px`;
+            const cell = document.elementFromPoint(event.clientX, event.clientY)?.closest(".cell");
+            if (cell) showPreview(Number(cell.dataset.index)); else clearPreview();
+          });
+          const finishPointer = (event) => {
+            if (!pointerDrag || pointerDrag.id !== event.pointerId) return;
+            const wasDragging = Boolean(pointerDrag.ghost);
+            const cell = document.elementFromPoint(event.clientX, event.clientY)?.closest(".cell");
+            pointerDrag.ghost?.remove();
+            pointerDrag = null;
+            button.classList.remove("dragging");
+            clearPreview();
+            if (wasDragging) {
+              suppressClickUntil = Date.now() + 350;
+              if (cell) {
+                const target = Number(cell.dataset.index);
+                placePiece(Math.floor(target / SIZE), target % SIZE, pieceIndex);
+              }
+            }
+          };
+          button.addEventListener("pointerup", finishPointer);
+          button.addEventListener("pointercancel", finishPointer);
+          trayElement.appendChild(button);
+        });
+      }
+
+      function placePiece(baseRow, baseCol, pieceIndex) {
+        const piece = tray[pieceIndex];
+        if (!piece || !canPlace(piece, baseRow, baseCol)) { playSound("error"); notify("Ops! Tente encaixar essa peça em outro cantinho."); return; }
+        piece.cells.forEach(([row, col]) => { board[(baseRow + row) * SIZE + baseCol + col] = piece.color; });
+
+        const fullRows = Array.from({ length: SIZE }, (_, row) => row).filter((row) => Array.from({ length: SIZE }, (_, col) => board[row * SIZE + col]).every(Boolean));
+        const fullCols = Array.from({ length: SIZE }, (_, col) => col).filter((col) => Array.from({ length: SIZE }, (_, row) => board[row * SIZE + col]).every(Boolean));
+        fullRows.forEach((row) => Array.from({ length: SIZE }, (_, col) => { board[row * SIZE + col] = null; }));
+        fullCols.forEach((col) => Array.from({ length: SIZE }, (_, row) => { board[row * SIZE + col] = null; }));
+
+        const lines = fullRows.length + fullCols.length;
+        combo = lines ? combo + 1 : 0;
+        const gained = piece.cells.length * 10 + (lines ? 120 * lines * lines * Math.max(1, combo) : 0);
+        const coinGain = Math.max(1, Math.floor(gained / 60)) + lines * 5;
+        score += gained;
+        profile.coins += coinGain;
+        profile.bestScore = Math.max(profile.bestScore, score);
+        profile.stats.placements += 1;
+        profile.stats.lines += lines;
+        profile.stats.bestCombo = Math.max(profile.stats.bestCombo, combo);
+        profile.daily.placements += 1;
+        profile.daily.lines += lines;
+        profile.weekly.placements += 1;
+        profile.weekly.lines = (profile.weekly.lines || 0) + lines;
+        profile.weekly.score = Math.max(profile.weekly.score || 0, score);
+        gameStats.placements += 1;
+        gameStats.lines += lines;
+        gameStats.bestCombo = Math.max(gameStats.bestCombo, combo);
+        gameStats.score = score;
+        tray[pieceIndex] = null;
+        if (tray.every((item) => item === null)) tray = newTray();
+        selected = null;
+        hovered = null;
+        checkAchievements();
+        saveProfile();
+        render();
+        playSound(lines ? (combo > 1 ? "combo" : "line") : "place");
+        if (lines) notify(`${lines} linha${lines > 1 ? "s" : ""} limpa${lines > 1 ? "s" : ""} • +${gained}`);
+        if (!hasAnyMove()) showNoMoves();
+      }
+
+      function checkAchievements() {
+        const gained = achievements.filter((item) => !profile.unlocked.includes(item.id) && metricValue(item.metric) >= item.target);
+        if (gained.length) {
+          profile.unlocked.push(...gained.map((item) => item.id));
+          notify(`Conquista desbloqueada: ${gained[0].name}`);
+        }
+      }
+
+      function rankings() {
+        const otherPlayers = worldPlayers.filter((player) => player.name.toUpperCase() !== PLAYER_NAME.toUpperCase());
+        return [...otherPlayers, { name: "VOCÊ", country: countryFlag(PLAYER_COUNTRY), score: profile.bestScore, color: "cyan" }]
+          .sort((a, b) => b.score - a.score)
+          .map((player, index) => ({ ...player, rank: index + 1 }));
+      }
+
+      function playerRow(player, full = false) {
+        const initials = player.name === "VOCÊ" ? "F7" : player.name.slice(0, 2);
+        return `<li class="${player.name === "VOCÊ" ? "user" : ""}"><span class="rank ${player.rank <= 3 ? "podium" : ""}">${String(player.rank).padStart(2,"0")}</span><span class="player-avatar ${player.color}">${initials}</span><span class="player-info"><b>${player.name}</b><small>${player.country} GLOBAL</small></span><strong class="player-score">${player.score.toLocaleString("pt-BR")}</strong></li>`;
+      }
+
+      function renderThemeMotion() {
+        const layer = $("#themeMotion");
+        const theme = arenaThemes.find((item) => item.id === profile.activeTheme) || arenaThemes[0];
+        if (!layer || motionThemeId === theme.id) return;
+        motionThemeId = theme.id;
+        layer.innerHTML = Array.from({ length: 14 }, (_, index) => {
+          const icon = theme.icons[index % theme.icons.length];
+          const x = (index * 29 + 7) % 94;
+          const size = 20 + (index % 4) * 6;
+          const duration = 10 + (index % 5) * 2;
+          const delay = -(index % 8) * 1.7;
+          return `<span style="--x:${x}%;--size:${size}px;--dur:${duration}s;--delay:${delay}s">${icon}</span>`;
+        }).join("");
+      }
+
+      function renderStatus() {
+        const list = rankings();
+        const user = list.find((player) => player.name === "VOCÊ");
+        $("#score").textContent = formatScore(score);
+        $("#bestScore").textContent = formatScore(profile.bestScore);
+        $("#comboValue").textContent = `× ${Math.max(1, combo).toFixed(1)}`;
+        $("#comboHint").textContent = combo ? `PRÓXIMO ×${combo + 1} AO COMPLETAR UMA LINHA` : "COMPLETE LINHAS PARA BRILHAR!";
+        $("#missionText").textContent = `${Math.min(gameStats.lines, 12)} / 12`;
+        $("#missionBar").style.width = `${Math.min(100, gameStats.lines / 12 * 100)}%`;
+        $("#levelLabel").textContent = `NÍVEL ${12 + Math.floor(profile.stats.placements / 30)}`;
+        $("#rankLabel").textContent = `#${user.rank} NA TURMA`;
+        $("#leaderboard").innerHTML = list.slice(0, 4).map((player) => playerRow(player)).join("");
+        $("#yourRank").innerHTML = `<span class="rank">${String(user.rank).padStart(2,"0")}</span><span class="player-avatar cyan">F7</span><span class="player-info"><b>VOCÊ</b><small>🇧🇷 BRASIL</small></span><strong class="player-score">${profile.bestScore.toLocaleString("pt-BR")}</strong>`;
+        const percent = Math.round(profile.unlocked.length / achievements.length * 100);
+        $("#achievementText").textContent = `${profile.unlocked.length} de ${achievements.length} liberadas`;
+        $("#achievementPercent").textContent = `${percent}% concluído`;
+        $("#achievementValue").textContent = `${percent}%`;
+        $("#coinValue").textContent = profile.coins.toLocaleString("pt-BR");
+        document.body.dataset.arenaTheme = profile.activeTheme;
+        renderThemeMotion();
+        const currentMap = mapFor();
+        $("#mapName").textContent = currentMap.name;
+        $("#mapDescription").textContent = currentMap.description;
+      }
+
+      function render() { renderBoard(); renderTray(); renderStatus(); }
+
+      function newGame() {
+        board = boardForMap(currentMapId);
+        tray = newTray();
+        selected = null;
+        hovered = null;
+        score = 0;
+        combo = 0;
+        gameStats = { placements: 0, lines: 0, bestCombo: 0, score: 0 };
+        blitzRemaining = 120;
+        reviveUsed = false;
+        $("#gameOverMessage").textContent = "VOCÊ JOGOU MUITO BEM!";
+        $("#gameOverTitle").textContent = "FIM DA RODADA";
+        $("#reviveButton").hidden = true;
+        $("#reviveButton").disabled = false;
+        $("#playAgain").hidden = false;
+        $("#gameOver").classList.remove("show");
+        render();
+        notify("Nova rodada! Divirta-se com os bloquinhos. 🎉");
+      }
+
+      function notify(message) {
+        clearTimeout(toastTimer);
+        $("#toastText").textContent = message;
+        $("#toast").classList.add("show");
+        toastTimer = setTimeout(() => $("#toast").classList.remove("show"), 2300);
+      }
+
+      function openPanel(view) {
+        document.querySelectorAll(".nav button").forEach((button) => button.classList.toggle("active", button.dataset.view === view));
+        if (view === "play") { if (dialog.open) dialog.close(); return; }
+        const titles = { challenges: "MISSÕES DIVERTIDAS", achievements: "MEUS TROFÉUS", ranking: "PLACAR DOS AMIGOS", shop: "LOJA DE CENÁRIOS" };
+        $("#dialogTitle").textContent = titles[view];
+        if (view === "challenges") renderChallenges();
+        if (view === "achievements") renderAchievements();
+        if (view === "ranking") renderFullRanking();
+        if (view === "shop") renderShop();
+        if (!dialog.open) dialog.showModal();
+      }
+
+      function renderChallenges() {
+        $("#dialogBody").innerHTML = `<div class="card-grid">${challenges.map((item) => {
+          const current = metricValue(item.metric, item.scope);
+          const percent = Math.min(100, Math.round(current / item.target * 100));
+          const reset = item.scope === "daily" ? ` • reinicia em ${countdownTo("day")}` : item.scope === "weekly" ? ` • reinicia em ${countdownTo("week")}` : "";
+          return `<article class="challenge-card ${percent === 100 ? "complete" : ""}"><b>${item.icon}</b><small>${item.tag}</small><h3>${item.title}</h3><p>${item.detail}${reset}</p><div class="track"><i style="width:${percent}%"></i></div><footer><span>${Math.min(current,item.target)} / ${item.target}</span><strong>${percent === 100 ? "CONCLUÍDO" : item.reward}</strong></footer></article>`;
+        }).join("")}</div>`;
+      }
+
+      function countdownTo(scope) {
+        const now = new Date();
+        let target = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        if (scope === "week") target = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (8 - (now.getDay() || 7)));
+        const seconds = Math.max(0, Math.floor((target - now) / 1000));
+        return `${Math.floor(seconds / 86400)}d ${String(Math.floor(seconds / 3600) % 24).padStart(2,"0")}h ${String(Math.floor(seconds / 60) % 60).padStart(2,"0")}m`;
+      }
+
+      function updateTimers() {
+        resetTimedProgress();
+        const now = Date.now();
+        const seasonStart = new Date(2026, 7, 1).getTime();
+        const seasonLength = 28 * 86400000;
+        const elapsed = Math.max(0, now - seasonStart);
+        const remaining = seasonLength - (elapsed % seasonLength);
+        const days = Math.floor(remaining / 86400000);
+        const hours = Math.floor(remaining / 3600000) % 24;
+        document.querySelector(".season span").textContent = `${days}d ${String(hours).padStart(2,"0")}h restantes`;
+        if (mode === "blitz" && !$("#gameOver").classList.contains("show")) {
+          blitzRemaining = Math.max(0, blitzRemaining - 1);
+          $("#modeClock").textContent = `${Math.floor(blitzRemaining / 60)}:${String(blitzRemaining % 60).padStart(2,"0")}`;
+          if (!blitzRemaining) {
+            void submitWorldScore();
+            $("#finalScore").textContent = `${formatScore(score)} PTS`;
+            $("#gameOverMessage").textContent = "O TEMPO ACABOU. VOCÊ FOI DEMAIS!";
+            $("#gameOverTitle").textContent = "FIM DA RODADA";
+            $("#reviveButton").hidden = true;
+            $("#playAgain").hidden = false;
+            $("#gameOver").classList.add("show");
+            playSound("gameover");
+          }
+        }
+      }
+
+      function renderAchievements() {
+        $("#dialogBody").innerHTML = `<div class="achievement-grid">${achievements.map((item) => {
+          const current = metricValue(item.metric);
+          const unlocked = profile.unlocked.includes(item.id) || current >= item.target;
+          return `<article class="achievement-card ${unlocked ? "unlocked" : ""}"><b>${item.icon}</b><div><small>${unlocked ? "DESBLOQUEADA" : `${Math.min(current,item.target)} / ${item.target}`}</small><h3>${item.name}</h3><p>${item.desc}</p></div><strong>${unlocked ? "✓" : "·"}</strong></article>`;
+        }).join("")}</div>`;
+      }
+
+
+      function renderShop() {
+        $("#dialogBody").innerHTML = `<div class="shop-intro"><div><small class="eyebrow">DEIXE TUDO DO SEU JEITO</small><p>Brinque para ganhar estrelinhas e liberar novos cenários.</p></div><strong class="shop-balance">⭐ ${profile.coins.toLocaleString("pt-BR")}</strong></div><div class="shop-grid">${arenaThemes.map((theme) => {
+          const owned = profile.ownedThemes.includes(theme.id);
+          const active = profile.activeTheme === theme.id;
+          const action = active ? "USANDO" : owned ? "ESCOLHER" : `⭐ ${theme.price}`;
+          return `<article class="theme-card"><div class="theme-preview ${theme.id}" aria-hidden="true">${theme.icons.map((icon) => `<span>${icon}</span>`).join("")}</div><footer><div><h3>${theme.name}</h3><p>${theme.description}</p></div><button data-theme="${theme.id}" class="${active ? "active" : owned ? "" : "buy"}" ${active ? "disabled" : ""}>${action}</button></footer></article>`;
+        }).join("")}</div>`;
+        $("#dialogBody").querySelectorAll("[data-theme]").forEach((button) => button.addEventListener("click", () => selectTheme(button.dataset.theme)));
+      }
+
+      function selectTheme(themeId) {
+        const theme = arenaThemes.find((item) => item.id === themeId);
+        if (!theme) return;
+        if (!profile.ownedThemes.includes(theme.id)) {
+          if (profile.coins < theme.price) { playSound("error"); notify("Você ainda precisa de mais estrelinhas para esse cenário."); return; }
+          profile.coins -= theme.price;
+          profile.ownedThemes.push(theme.id);
+          notify(`${theme.name} desbloqueado.`);
+        } else {
+          notify(`${theme.name} equipado.`);
+        }
+        profile.activeTheme = theme.id;
+        saveProfile();
+        renderStatus();
+        renderShop();
+      }
+
+      function syncMapSelector() {
+        const selector = $("#mapSelect");
+        const options = maps[mode];
+        if (!options.some((item) => item.id === currentMapId)) currentMapId = profile.mapSelections[mode] || options[0].id;
+        selector.innerHTML = options.map((item) => `<option value="${item.id}">${item.name}</option>`).join("");
+        selector.value = currentMapId;
+      }
+
+      function renderFullRanking() {
+        const list = rankings();
+        const user = list.find((player) => player.name === "VOCÊ");
+        $("#dialogBody").innerHTML = `<div class="ranking-summary"><div><small>SUA POSIÇÃO</small><strong>#${user.rank}</strong><span>LIGA ESTRELA</span></div><div><small>SEU RECORDE</small><strong>${profile.bestScore.toLocaleString("pt-BR")}</strong><span>SALVO NESTE APARELHO</span></div><div><small>FESTA</small><strong>08</strong><span>12D 08H</span></div></div><ol class="full-ranking">${list.map((player) => playerRow(player, true)).join("")}</ol><p class="ranking-note">Placar de demonstração • seu progresso fica salvo neste navegador</p>`;
+      }
+
+      document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", () => openPanel(button.dataset.view)));
+      document.querySelectorAll("[data-open]").forEach((button) => button.addEventListener("click", () => openPanel(button.dataset.open)));
+      $("#brandButton").addEventListener("click", () => openPanel("play"));
+      $("#closeDialog").addEventListener("click", () => { dialog.close(); openPanel("play"); });
+      dialog.addEventListener("click", (event) => { if (event.target === dialog) { dialog.close(); openPanel("play"); } });
+      $("#restartButton").addEventListener("click", newGame);
+      $("#reviveButton").addEventListener("click", reviveGame);
+      $("#playAgain").addEventListener("click", newGame);
+      $("#modeSelect").addEventListener("change", (event) => {
+        mode = event.target.value;
+        profile.lastMode = mode;
+        currentMapId = profile.mapSelections[mode] || maps[mode][0].id;
+        $("#modeTitle").textContent = mode === "blitz" ? "BLITZ" : mode === "zen" ? "ZEN" : "CLÁSSICO";
+        $("#modeHint").textContent = mode === "zen" ? "BRINQUE SEM PRESSA" : mode === "blitz" ? "CORRIDA CONTRA O TEMPO" : "BRINCADEIRA CLÁSSICA";
+        $("#modeClock").textContent = mode === "blitz" ? "2:00" : "10×10";
+        syncMapSelector();
+        saveProfile();
+        newGame();
+      });
+      $("#mapSelect").addEventListener("change", (event) => {
+        currentMapId = event.target.value;
+        profile.mapSelections[mode] = currentMapId;
+        saveProfile();
+        newGame();
+      });
+      $("#soundButton").addEventListener("click", () => {
+        soundOn = !soundOn;
+        $("#soundButton").textContent = soundOn ? "🔊" : "🔇";
+        $("#soundButton").title = soundOn ? "Som ligado" : "Som desligado";
+        $("#soundButton").setAttribute("aria-label", soundOn ? "Desativar som" : "Ativar som");
+        profile.soundOn = soundOn;
+        saveProfile();
+      });
+
+      $("#modeSelect").value = mode;
+      $("#modeTitle").textContent = mode === "blitz" ? "BLITZ" : mode === "zen" ? "ZEN" : "CLÁSSICO";
+      $("#modeHint").textContent = mode === "zen" ? "BRINQUE SEM PRESSA" : mode === "blitz" ? "CORRIDA CONTRA O TEMPO" : "BRINCADEIRA CLÁSSICA";
+      $("#modeClock").textContent = mode === "blitz" ? "2:00" : "10×10";
+      $("#soundButton").textContent = soundOn ? "🔊" : "🔇";
+      $("#soundButton").title = soundOn ? "Som ligado" : "Som desligado";
+      $("#soundButton").setAttribute("aria-label", soundOn ? "Desativar som" : "Ativar som");
+      syncMapSelector();
+      updateTimers();
+      setInterval(updateTimers, 1000);
+      render();
+      void loadWorldRanking();
+      setInterval(loadWorldRanking, 60000);
+    })();
+  </script>
+</body>
+</html>
