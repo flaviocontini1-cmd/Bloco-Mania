@@ -709,6 +709,21 @@
     .credits-card h3 { margin: 0; color: #6848a5; font-size: 19px; }
     .credits-card p { margin: 5px 0 0; color: #81758f; font-size: 11px; }
     .credits-card strong { color: #d65891; }
+    .topbar { grid-template-columns: minmax(0, 1fr) auto; }
+    .profile { grid-column: 2; justify-self: end; }
+    .menu-navigation { padding: 14px; }
+    .menu-level { min-height: 72px; display: flex; align-items: center; gap: 13px; padding: 12px; border-radius: 16px; background: linear-gradient(135deg, #f3eaff, #fff7cd); }
+    .menu-level > span { width: 45px; height: 45px; display: grid; place-items: center; border-radius: 14px; background: #fff; font-size: 22px; box-shadow: 0 4px 0 rgba(91,64,142,.10); }
+    .menu-level div { display: flex; flex-direction: column; gap: 3px; }
+    .menu-level small { color: #8b70b4; font-size: 9px; font-weight: 900; }
+    .menu-level strong { color: #6845ad; font-size: 16px; }
+    .menu-links { display: grid; gap: 7px; margin-top: 12px; }
+    .menu-links button { width: 100%; min-height: 48px; display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 9px; padding: 0 13px; border: 2px solid transparent; border-radius: 14px; background: transparent; color: #5e4c77; text-align: left; cursor: pointer; }
+    .menu-links button:hover { border-color: #e2d7f1; background: #faf7ff; }
+    .menu-links button.active { border-color: #d4c1f3; background: #f0e7ff; color: #6845ad; }
+    .menu-links button span { font-size: 18px; text-align: center; }
+    .menu-links button b { font-size: 12px; }
+    .menu-links button i { color: #9a8aaa; font-style: normal; }
 
     body[data-ui-theme="dark"] {
       --panel: #251d35;
@@ -799,6 +814,13 @@
     body[data-ui-theme="dark"] .theme-card p,
     body[data-ui-theme="dark"] .challenge-card p,
     body[data-ui-theme="dark"] .achievement-card p { color: #b6aac4; }
+    body[data-ui-theme="dark"] .menu-level { background: linear-gradient(135deg, #3b2c53, #3a321d); }
+    body[data-ui-theme="dark"] .menu-level > span { background: #251d35; box-shadow: 0 4px 0 #171020; }
+    body[data-ui-theme="dark"] .menu-level small { color: #baa6d7; }
+    body[data-ui-theme="dark"] .menu-level strong { color: #dcc8ff; }
+    body[data-ui-theme="dark"] .menu-links button { color: #d8cde6; }
+    body[data-ui-theme="dark"] .menu-links button:hover { border-color: #514067; background: #302442; }
+    body[data-ui-theme="dark"] .menu-links button.active { border-color: #7457a0; background: #412f5b; color: #fff; }
 
     @keyframes scenery-colors {
       from { background-position: 0% 20%; }
@@ -896,31 +918,21 @@
       .statusbar .center, .statusbar span:last-child { display: block; }
       .settings-menu { width: 100%; }
     }
-    @media (min-width: 801px) {
-      .topbar { grid-template-columns: minmax(190px, 250px) 1fr auto auto; column-gap: 12px; }
-      .menu-button, .profile { justify-self: end; }
-    }
     @media (max-width: 800px) {
-      .topbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto auto; gap: 10px; align-items: center; }
+      .topbar { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto; gap: 8px; }
       .brand { grid-column: 1; grid-row: 1; justify-self: start; }
-      .menu-button { grid-column: 2; grid-row: 1; display: block; justify-self: end; }
-      .nav { grid-column: 1 / -1; grid-row: 2; order: initial; width: 100%; height: auto; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; overflow: visible; }
-      .nav button { width: 100%; min-width: 0; min-height: 38px; padding: 0 4px; font-size: 10px; white-space: nowrap; }
-      .profile { grid-column: 1 / -1; grid-row: 3; order: initial; width: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; justify-self: stretch; }
-      .profile .online { display: none; }
-      .profile .coin-pill { display: flex; }
-      .profile .avatar { display: grid; }
-      .profile-copy { width: 100%; display: flex; align-items: stretch; text-align: left; }
-      .profile-copy small { display: block; text-align: left; }
+      .profile { grid-column: 2; grid-row: 1; width: auto; display: flex; gap: 6px; order: initial; }
+      .profile .coin-pill, .profile .online, .profile .avatar { display: none; }
+      .profile-copy { width: 104px; display: flex; align-items: stretch; }
+      .profile-copy small { display: none; }
       .player-name-input { width: 100%; text-align: left; }
+      .menu-button { display: block; flex: 0 0 auto; }
     }
-    @media (max-width: 520px) {
-      .topbar { grid-template-columns: minmax(0, 1fr) auto; }
-      .brand { justify-self: start; }
-      .profile { grid-template-columns: auto minmax(0, 1fr) auto; }
-      .nav { justify-content: stretch; }
-      .nav button { padding: 0 2px; font-size: 9px; }
-      .profile .coin-pill { min-width: 68px; }
+    @media (max-width: 390px) {
+      .brand { font-size: 15px; gap: 7px; }
+      .brand-mark { width: 28px; height: 28px; }
+      .profile-copy { width: 84px; }
+      .player-name-input { padding-inline: 6px; font-size: 10px; }
     }
     @media (prefers-reduced-motion: reduce) {
       .theme-motion, .theme-motion span, .theme-preview, .theme-preview span { animation: none !important; }
@@ -933,14 +945,8 @@
       <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
       <span>BLOCO <em>★</em> MANIA</span>
     </button>
-    <nav class="nav" aria-label="Navegação principal">
-      <button class="active" data-view="play">Jogar</button>
-      <button data-view="challenges">Desafios</button>
-      <button data-view="achievements">Conquistas</button>
-      <button data-view="shop">Loja</button>
-    </nav>
-    <button class="sound menu-button" id="menuButton" title="Abrir menu" aria-label="Abrir menu">☰</button>
     <div class="profile">
+      <button class="sound menu-button" id="menuButton" title="Abrir menu" aria-label="Abrir menu">☰</button>
       <span class="coin-pill" title="Créditos da Arena">◈ <b id="coinValue">650</b></span>
       <i class="online"></i>
       <label class="profile-copy"><small id="levelLabel">NÍVEL 12</small><input class="player-name-input" id="playerNameInput" maxlength="20" value="FLAVIO" aria-label="Seu nome no ranking mundial" title="Seu nome no ranking mundial"></label>
@@ -1012,6 +1018,15 @@
   <aside class="settings-menu" id="settingsMenu" aria-hidden="true" aria-label="Menu de configurações">
     <header class="settings-head"><div><small>MEU JOGO</small><h2>Configurações</h2></div><button id="closeSettings" aria-label="Fechar configurações">×</button></header>
     <div class="settings-body">
+      <section class="settings-group menu-navigation">
+        <div class="menu-level"><span>⭐</span><div><small>SEU PROGRESSO</small><strong id="menuLevelLabel">NÍVEL 12</strong></div></div>
+        <nav class="menu-links" aria-label="Navegação do jogo">
+          <button class="active" data-view="play"><span>🎮</span><b>Jogar</b><i>→</i></button>
+          <button data-view="challenges"><span>🎯</span><b>Desafios</b><i>→</i></button>
+          <button data-view="achievements"><span>🏆</span><b>Conquistas</b><i>→</i></button>
+          <button data-view="shop"><span>🛍️</span><b>Loja</b><i>→</i></button>
+        </nav>
+      </section>
       <section class="settings-group">
         <small>APARÊNCIA</small>
         <div class="theme-choice" role="group" aria-label="Tema visual">
@@ -1679,7 +1694,9 @@
         $("#comboHint").textContent = combo ? `PRÓXIMO ×${combo + 1} AO COMPLETAR UMA LINHA` : "COMPLETE LINHAS PARA BRILHAR!";
         $("#missionText").textContent = `${Math.min(gameStats.lines, 12)} / 12`;
         $("#missionBar").style.width = `${Math.min(100, gameStats.lines / 12 * 100)}%`;
-        $("#levelLabel").textContent = `NÍVEL ${12 + Math.floor(profile.stats.placements / 30)}`;
+        const levelText = `NÍVEL ${12 + Math.floor(profile.stats.placements / 30)}`;
+        $("#levelLabel").textContent = levelText;
+        $("#menuLevelLabel").textContent = levelText;
         $("#rankLabel").textContent = `#${user.rank} NA TURMA`;
         $("#leaderboard").innerHTML = list.slice(0, 4).map((player) => playerRow(player)).join("");
         const userInitials = escapeHtml((profile.playerName || DEFAULT_PLAYER_NAME).slice(0, 2));
@@ -1727,7 +1744,7 @@
       }
 
       function openPanel(view) {
-        document.querySelectorAll(".nav button").forEach((button) => button.classList.toggle("active", button.dataset.view === view));
+        document.querySelectorAll(".menu-links [data-view]").forEach((button) => button.classList.toggle("active", button.dataset.view === view));
         if (view === "play") { if (dialog.open) dialog.close(); return; }
         const titles = { challenges: "MISSÕES DIVERTIDAS", achievements: "MEUS TROFÉUS", ranking: "PLACAR DOS AMIGOS", shop: "LOJA DE CENÁRIOS" };
         $("#dialogTitle").textContent = titles[view];
@@ -1871,7 +1888,10 @@
         $("#menuButton").focus();
       }
 
-      document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", () => openPanel(button.dataset.view)));
+      document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", () => {
+        if ($("#settingsMenu").classList.contains("open")) closeSettings();
+        openPanel(button.dataset.view);
+      }));
       document.querySelectorAll("[data-open]").forEach((button) => button.addEventListener("click", () => openPanel(button.dataset.open)));
       $("#brandButton").addEventListener("click", () => openPanel("play"));
       $("#closeDialog").addEventListener("click", () => { dialog.close(); openPanel("play"); });
